@@ -1,0 +1,92 @@
+[
+  {
+    "id": 1,
+    "hospitalId": 1,
+    "name": "name1",
+    "surname": "surname1",
+    "floor": 1,
+    "building": 1,
+    "room": 1
+  },
+  {
+    "id": 2,
+    "hospitalId": 2,
+    "name": "name2",
+    "surname": "surname2",
+    "floor": 2,
+    "building": 2,
+    "room": 2
+  },
+  {
+    "id": 3,
+    "hospitalId": 3,
+    "name": "name3",
+    "surname": "surname3",
+    "floor": 3,
+    "building": 3,
+    "room": 3
+  },
+  {
+    "id": 4,
+    "hospitalId": 4,
+    "name": "name4",
+    "surname": "surname4",
+    "floor": 4,
+    "building": 4,
+    "room": 4
+  },
+  {
+    "id": 5,
+    "hospitalId": 5,
+    "name": "name5",
+    "surname": "surname5",
+    "floor": 5,
+    "building": 5,
+    "room": 5
+  },
+  {
+    "id": 6,
+    "hospitalId": 6,
+    "name": "name6",
+    "surname": "surname6",
+    "floor": 6,
+    "building": 6,
+    "room": 6
+  },
+  {
+    "id": 7,
+    "hospitalId": 7,
+    "name": "name7",
+    "surname": "surname7",
+    "floor": 7,
+    "building": 7,
+    "room": 7
+  },
+  {
+    "id": 8,
+    "hospitalId": 8,
+    "name": "name8",
+    "surname": "surname8",
+    "floor": 8,
+    "building": 8,
+    "room": 8
+  },
+  {
+    "id": 9,
+    "hospitalId": 9,
+    "name": "name9",
+    "surname": "surname9",
+    "floor": 9,
+    "building": 9,
+    "room": 9
+  },
+  {
+    "id": 10,
+    "hospitalId": 10,
+    "name": "name10",
+    "surname": "surname10",
+    "floor": 10,
+    "building": 10,
+    "room": 10
+  }
+]

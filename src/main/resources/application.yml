@@ -1,0 +1,11 @@
+server:
+  port: 8888
+  servlet:
+    context-path: /v1/api
+
+storage:
+  folder: hospital
+  patient-file: ${storage.folder}/patients.json
+  tracker-file-start: trackers_
+  tracker-file-end: .csv
+  tracker-file-pattern: ${storage.tracker-file-start}%s${storage.tracker-file-end}
