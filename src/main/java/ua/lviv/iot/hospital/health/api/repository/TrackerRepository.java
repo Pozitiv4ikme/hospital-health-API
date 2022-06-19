@@ -1,11 +1,13 @@
 package ua.lviv.iot.hospital.health.api.repository;
 
 import java.util.List;
-import ua.lviv.iot.hospital.health.api.model.entity.TrackerData;
+import java.util.Optional;
+import ua.lviv.iot.hospital.health.api.model.entity.Tracker;
 
 public interface TrackerRepository {
-  List<TrackerData> getData();
-  List<TrackerData> getDataByPatientId(int patientId);
-  List<TrackerData> getDataById(int id);
-  void saveDataForPatientId(int patientId, List<TrackerData> trackerDataList);
+  void create(Tracker tracker);
+  void update(long id, Tracker tracker);
+  void deleteById(long id);
+  List<Tracker> getAll();
+  Optional<Tracker> getById(long id);
 }

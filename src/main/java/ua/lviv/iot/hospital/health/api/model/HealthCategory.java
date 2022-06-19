@@ -1,6 +1,5 @@
 package ua.lviv.iot.hospital.health.api.model;
 
-import static ua.lviv.iot.hospital.health.api.model.HealthStatus.HEALTHY;
 import static ua.lviv.iot.hospital.health.api.model.HealthStatus.LIGHT_SICK;
 import static ua.lviv.iot.hospital.health.api.model.HealthStatus.VERY_SICK;
 import static ua.lviv.iot.hospital.health.api.model.TrackerDataType.PALPITATION;

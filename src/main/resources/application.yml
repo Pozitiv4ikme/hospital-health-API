@@ -5,7 +5,22 @@ server:
 
 storage:
   folder: hospital
-  patient-file: ${storage.folder}/patients.json
-  tracker-file-start: trackers_
-  tracker-file-end: .csv
-  tracker-file-pattern: ${storage.tracker-file-start}%s${storage.tracker-file-end}
+  file-end: .csv
+  hospital:
+    file-start: hospitals_
+    file-pattern: ${storage.hospital.file-start}%s${storage.file-end}
+  building:
+    file-start: buildings_
+    file-pattern: ${storage.building.file-start}%s${storage.file-end}
+  room:
+    file-start: rooms_
+    file-pattern: ${storage.room.file-start}%s${storage.file-end}
+  patient:
+    file-start: patients_
+    file-pattern: ${storage.patient.file-start}%s${storage.file-end}
+  tracker:
+    file-start: trackers_
+    file-pattern: ${storage.tracker.file-start}%s${storage.file-end}
+    data:
+      file-start: trackersData_
+      file-pattern: ${storage.tracker.data.file-start}%s${storage.file-end}

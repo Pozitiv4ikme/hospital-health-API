@@ -1,6 +1,5 @@
 package ua.lviv.iot.hospital.health.api.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.opencsv.bean.CsvBindAndSplitByPosition;
 import com.opencsv.bean.CsvBindByPosition;
 import com.opencsv.bean.CsvCustomBindByPosition;
@@ -14,11 +13,13 @@ import ua.lviv.iot.hospital.health.api.model.converter.InstantConverter;
 @Getter
 @Setter
 public class TrackerData {
+  public static final String HEADERS = "trackerId,patientId,type,values,createdAt";
+
   @CsvBindByPosition(position = 0)
-  private int trackerId;
+  private long trackerId;
 
   @CsvBindByPosition(position = 1)
-  private int patientId;
+  private long patientId;
 
   @CsvBindByPosition(position = 2)
   private TrackerDataType type;
@@ -28,4 +29,5 @@ public class TrackerData {
 
   @CsvCustomBindByPosition(position = 4, converter = InstantConverter.class)
   private Instant createdAt = Instant.now();
+
 }

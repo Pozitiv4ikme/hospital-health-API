@@ -2,11 +2,16 @@ package ua.lviv.iot.hospital.health.api.service.impl;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ua.lviv.iot.hospital.health.api.model.HealthCategory;
 import ua.lviv.iot.hospital.health.api.model.HealthStatus;
+import ua.lviv.iot.hospital.health.api.model.dto.TrackerDto;
+import ua.lviv.iot.hospital.health.api.model.entity.Tracker;
 import ua.lviv.iot.hospital.health.api.model.entity.TrackerData;
+import ua.lviv.iot.hospital.health.api.repository.TrackerDataRepository;
 import ua.lviv.iot.hospital.health.api.repository.TrackerRepository;
 import ua.lviv.iot.hospital.health.api.service.TrackerService;
 
@@ -15,15 +20,61 @@ import ua.lviv.iot.hospital.health.api.service.TrackerService;
 public class TrackerServiceImpl implements TrackerService {
 
   private final TrackerRepository trackerRepository;
+  private final TrackerDataRepository trackerDataRepository;
 
   @Override
-  public List<TrackerData> getTrackerDataByPatientId(int patientId) {
-    return trackerRepository.getDataByPatientId(patientId);
+  public Optional<TrackerDto> getById(long id) {
+    return trackerRepository.getById(id)
+        .map(tracker -> buildTrackerDto(tracker, getDataById(id)));
   }
 
   @Override
-  public void addTrackerData(int patientId, List<TrackerData> trackerDataList) {
-    trackerRepository.saveDataForPatientId(patientId, trackerDataList);
+  public List<TrackerDto> getAll() {
+    return trackerRepository.getAll().stream()
+        .map(tracker -> buildTrackerDto(tracker, getDataById(tracker.getId())))
+        .toList();
+  }
+
+  @Override
+  public void create(Tracker tracker) {
+    trackerRepository.create(tracker);
+  }
+
+  @Override
+  public void update(long id, Tracker tracker) {
+    trackerRepository.update(id, tracker);
+  }
+
+  @Override
+  public void deleteById(long id) {
+    trackerRepository.deleteById(id);
+  }
+
+  @Override
+  public List<TrackerDto> getAllByPatientId(long patientId) {
+    var trackerDataMap = getDataByPatientId(patientId).stream()
+        .collect(Collectors.groupingBy(TrackerData::getTrackerId));
+    return trackerDataMap.keySet().stream()
+        .map(trackerId -> trackerRepository.getById(trackerId)
+            .map(tracker -> buildTrackerDto(tracker, trackerDataMap.get(trackerId))))
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .toList();
+  }
+
+  @Override
+  public List<TrackerData> getDataById(long id) {
+    return trackerDataRepository.getDataById(id);
+  }
+
+  @Override
+  public List<TrackerData> getDataByPatientId(long patientId) {
+    return trackerDataRepository.getDataByPatientId(patientId);
+  }
+
+  @Override
+  public void addData(long patientId, List<TrackerData> trackerDataList) {
+    trackerDataRepository.saveDataForPatientId(patientId, trackerDataList);
   }
 
   @Override
@@ -31,11 +82,6 @@ public class TrackerServiceImpl implements TrackerService {
     return trackerDataList.stream()
         .map(this::getTrackerHealthStatus)
         .reduce(HealthStatus.UNKNOWN, this::reduceHealthStatus);
-  }
-
-  @Override
-  public List<TrackerData> getTrackerDataById(int id) {
-    return trackerRepository.getDataById(id);
   }
 
   private HealthStatus getTrackerHealthStatus(TrackerData trackerData) {
@@ -60,5 +106,14 @@ public class TrackerServiceImpl implements TrackerService {
           && values.get(i) <= ranges.get(i).max());
     }
     return isInRange;
+  }
+
+  private TrackerDto buildTrackerDto(Tracker tracker, List<TrackerData> trackerData) {
+    return TrackerDto.builder()
+        .id(tracker.getId())
+        .model(tracker.getModel())
+        .healthStatus(getHealthStatus(trackerData))
+        .trackerData(trackerData)
+        .build();
   }
 }

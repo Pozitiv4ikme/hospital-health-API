@@ -1,7 +1,17 @@
 package ua.lviv.iot.hospital.health.api.model.entity;
 
-import java.util.List;
+import com.opencsv.bean.CsvBindByPosition;
+import lombok.Getter;
+import lombok.Setter;
 
-public record Hospital(int id,
-                       List<Patient> patients) {
+@Getter
+@Setter
+public class Hospital {
+  public static final String HEADERS = "id,name";
+
+  @CsvBindByPosition(position = 0)
+  private long id;
+
+  @CsvBindByPosition(position = 1)
+  private String name;
 }
