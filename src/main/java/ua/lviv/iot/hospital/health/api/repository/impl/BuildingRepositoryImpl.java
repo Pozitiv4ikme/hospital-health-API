@@ -32,7 +32,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
   }
 
   @Override
-  public void update(Building building, long id) {
+  public void update(long id, Building building) {
     if (getById(id).isEmpty()) {
       String message = "Cannot update building, because building with id " + id + " does not exist";
       log.error(message);

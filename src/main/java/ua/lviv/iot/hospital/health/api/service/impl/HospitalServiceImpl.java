@@ -37,8 +37,8 @@ public class HospitalServiceImpl implements HospitalService {
   }
 
   @Override
-  public void update(Hospital hospital, long id) {
-    hospitalRepository.update(hospital, id);
+  public void update(long id, Hospital hospital) {
+    hospitalRepository.update(id, hospital);
   }
 
   @Override

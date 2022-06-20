@@ -7,19 +7,9 @@ import ua.lviv.iot.hospital.health.api.model.dto.TrackerDto;
 import ua.lviv.iot.hospital.health.api.model.entity.Tracker;
 import ua.lviv.iot.hospital.health.api.model.entity.TrackerData;
 
-public interface TrackerService {
-
-  Optional<TrackerDto> getById(long id);
-
-  List<TrackerDto> getAll();
+public interface TrackerService extends BaseService<TrackerDto, Tracker> {
 
   List<TrackerDto> getAllByPatientId(long patientId);
-
-  void create(Tracker tracker);
-
-  void update(long id, Tracker tracker);
-
-  void deleteById(long id);
 
   List<TrackerData> getDataById(long id);
 

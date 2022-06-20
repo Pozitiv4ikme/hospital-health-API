@@ -44,8 +44,8 @@ public class RoomServiceImpl implements RoomService {
   }
 
   @Override
-  public void update(Room room, long id) {
-    roomRepository.update(room, id);
+  public void update(long id, Room room) {
+    roomRepository.update(id, room);
   }
 
   @Override

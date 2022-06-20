@@ -32,7 +32,7 @@ public class RoomRepositoryImpl implements RoomRepository {
   }
 
   @Override
-  public void update(Room room, long id) {
+  public void update(long id, Room room) {
     if (getById(id).isEmpty()) {
       String message = "Cannot update room, because room with id " + id + " does not exist";
       log.error(message);

@@ -23,23 +23,23 @@ import ua.lviv.iot.hospital.health.api.service.TrackerService;
 @RestController
 @RequestMapping("patients")
 @RequiredArgsConstructor
-public class PatientController {
+public final class PatientController {
 
   private final PatientService patientService;
   private final TrackerService trackerService;
 
   @PostMapping
-  public void create(@RequestBody Patient patient) {
+  public void create(@RequestBody final Patient patient) {
     patientService.create(patient);
   }
 
   @PutMapping("{id}")
-  public void update(@PathVariable("id") long id, @RequestBody Patient patient) {
-    patientService.update(patient, id);
+  public void update(@PathVariable("id") final long id, @RequestBody final Patient patient) {
+    patientService.update(id, patient);
   }
 
   @DeleteMapping("{id}")
-  public void delete(@PathVariable("id") long id) {
+  public void delete(@PathVariable("id") final long id) {
     patientService.deleteById(id);
   }
 
@@ -49,24 +49,24 @@ public class PatientController {
   }
 
   @GetMapping("{id}")
-  public Optional<PatientDto> getById(@PathVariable("id") int id) {
+  public Optional<PatientDto> getById(@PathVariable("id") final int id) {
     return patientService.getById(id);
   }
 
   @GetMapping("{id}/status")
-  public HealthStatus getPatientStatusById(@PathVariable("id") int id) {
+  public HealthStatus getPatientStatusById(@PathVariable("id") final int id) {
     return patientService.getStatusById(id);
   }
 
   @GetMapping("{id}/trackerData")
-  public List<TrackerData> patientTrackerData(@PathVariable("id") int patientId) {
+  public List<TrackerData> patientTrackerData(@PathVariable("id") final int patientId) {
     return trackerService.getDataByPatientId(patientId);
   }
 
   @PostMapping("{id}/trackerData")
   @ResponseStatus(HttpStatus.ACCEPTED)
-  public HealthStatus addPatientTrackerData(@PathVariable("id") int patientId,
-      @RequestBody List<TrackerData> trackerDataList) throws Exception {
+  public HealthStatus addPatientTrackerData(@PathVariable("id") final int patientId,
+      @RequestBody final List<TrackerData> trackerDataList) throws Exception {
     trackerService.addData(patientId, trackerDataList);
     return trackerService.getHealthStatus(trackerDataList);
   }

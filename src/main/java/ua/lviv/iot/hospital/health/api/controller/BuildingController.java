@@ -20,27 +20,27 @@ import ua.lviv.iot.hospital.health.api.service.BuildingService;
 @RestController
 @RequestMapping("buildings")
 @RequiredArgsConstructor
-public class BuildingController {
+public final class BuildingController {
 
   private final BuildingService buildingService;
 
   @PostMapping
-  public void create(@RequestBody Building building) {
+  public void create(@RequestBody final Building building) {
     buildingService.create(building);
   }
 
   @PutMapping("{id}")
-  public void update(@PathVariable("id") long id, @RequestBody Building building) {
-    buildingService.update(building, id);
+  public void update(@PathVariable("id") final long id, @RequestBody final Building building) {
+    buildingService.update(id, building);
   }
 
   @DeleteMapping("{id}")
-  public void delete(@PathVariable("id") long id) {
+  public void delete(@PathVariable("id") final long id) {
     buildingService.deleteById(id);
   }
 
   @GetMapping("{id}")
-  public Optional<BuildingDto> getById(@PathVariable("id") long id) {
+  public Optional<BuildingDto> getById(@PathVariable("id") final long id) {
     return buildingService.getById(id);
   }
 
@@ -51,13 +51,13 @@ public class BuildingController {
 
 
   @GetMapping("{id}/rooms")
-  public List<RoomDto> getAllRoomsByBuildingId(@PathVariable("id") long id) {
+  public List<RoomDto> getAllRoomsByBuildingId(@PathVariable("id") final long id) {
     return getById(id).map(BuildingDto::rooms).orElse(List.of());
   }
 
   @GetMapping("{id}/rooms/{roomId}/patients")
-  public List<PatientDto> getAllPatientsByBuildingIdAndRoomId(@PathVariable("id") long id,
-      @PathVariable("roomId") long roomId) {
+  public List<PatientDto> getAllPatientsByBuildingIdAndRoomId(@PathVariable("id") final long id,
+      @PathVariable("roomId") final long roomId) {
     return getAllRoomsByBuildingId(id).stream()
         .filter(roomDto -> roomDto.id() == roomId)
         .flatMap(roomDto -> roomDto.patients().stream())

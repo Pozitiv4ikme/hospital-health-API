@@ -26,24 +26,24 @@ import ua.lviv.iot.hospital.health.api.service.PatientService;
 @RestController
 @RequestMapping("hospitals")
 @RequiredArgsConstructor
-public class HospitalController {
+public final class HospitalController {
 
   private final HospitalService hospitalService;
   private final BuildingService buildingService;
   private final PatientService patientService;
 
   @PostMapping
-  public void create(@RequestBody Hospital hospital) {
+  public void create(@RequestBody final Hospital hospital) {
     hospitalService.create(hospital);
   }
 
   @PutMapping("{id}")
-  public void update(@RequestBody Hospital hospital, @PathVariable long id) {
-    hospitalService.update(hospital, id);
+  public void update(@RequestBody final Hospital hospital, @PathVariable final long id) {
+    hospitalService.update(id, hospital);
   }
 
   @DeleteMapping("{id}")
-  public void delete(@PathVariable long id) {
+  public void delete(@PathVariable final long id) {
     hospitalService.deleteById(id);
   }
 
@@ -53,17 +53,17 @@ public class HospitalController {
   }
 
   @GetMapping("{id}")
-  public Optional<HospitalDto> getById(@PathVariable("id") long id) {
+  public Optional<HospitalDto> getById(@PathVariable("id") final long id) {
     return hospitalService.getById(id);
   }
 
   @GetMapping("{id}/buildings")
-  public List<BuildingDto> getAllBuildingsByHospitalId(@PathVariable("id") long hospitalId) {
+  public List<BuildingDto> getAllBuildingsByHospitalId(@PathVariable("id") final long hospitalId) {
     return buildingService.getAllByHospitalId(hospitalId);
   }
 
   @GetMapping("{id}/buildings/{buildingId}/rooms")
-  public List<RoomDto> getAllRoomsByHospitalIdAndBuildingId(@PathVariable("id") long hospitalId,
+  public List<RoomDto> getAllRoomsByHospitalIdAndBuildingId(@PathVariable("id") final long hospitalId,
       @PathVariable("buildingId") long buildingId) {
     return getAllBuildingsByHospitalId(hospitalId).stream()
         .filter(buildingDto -> buildingDto.id() == buildingId)
@@ -72,7 +72,7 @@ public class HospitalController {
   }
 
   @GetMapping("{id}/buildings/{buildingId}/rooms/{roomId}/patients")
-  public List<PatientDto> getAllPatientsByHospitalIdAndBuildingIdAndRoomId(@PathVariable("id") long hospitalId,
+  public List<PatientDto> getAllPatientsByHospitalIdAndBuildingIdAndRoomId(@PathVariable("id") final long hospitalId,
       @PathVariable("buildingId") long buildingId, @PathVariable("roomId") long roomId) {
     return getAllRoomsByHospitalIdAndBuildingId(hospitalId, buildingId).stream()
         .filter(roomDto -> roomDto.id() == roomId)
@@ -81,7 +81,7 @@ public class HospitalController {
   }
 
   @GetMapping("{id}/rooms")
-  public List<RoomDto> getAllRoomsByHospitalId(@PathVariable("id") long hospitalId) {
+  public List<RoomDto> getAllRoomsByHospitalId(@PathVariable("id") final long hospitalId) {
     return hospitalService.getById(hospitalId)
         .map(hospitalDto -> hospitalDto.buildings()
             .stream().flatMap(buildingDto -> buildingDto.rooms().stream()).toList())
@@ -89,8 +89,8 @@ public class HospitalController {
   }
 
   @GetMapping("{id}/patients")
-  public List<PatientDto> getAllPatientsByHealthStatus(@PathVariable("id") long hospitalId,
-      @RequestParam("status") Optional<HealthStatus> statusOptional) {
+  public List<PatientDto> getAllPatientsByHealthStatus(@PathVariable("id") final long hospitalId,
+      @RequestParam("status") final Optional<HealthStatus> statusOptional) {
     return hospitalService.getById(hospitalId)
         .map(hospitalDto -> hospitalDto.buildings()
             .stream()
@@ -102,7 +102,7 @@ public class HospitalController {
 
   }
 
-  private Boolean hasStatus(Optional<HealthStatus> statusOptional, PatientDto patientDto) {
+  private Boolean hasStatus(final Optional<HealthStatus> statusOptional, final PatientDto patientDto) {
     return statusOptional.map(status -> status == patientService.getStatusById(patientDto.id())).orElse(true);
   }
 }

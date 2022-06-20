@@ -36,7 +36,7 @@ public class RoomController {
 
   @PutMapping("{id}")
   public void update(@PathVariable("id") long id, @RequestBody Room room) {
-    roomService.update(room, id);
+    roomService.update(id, room);
   }
 
   @GetMapping

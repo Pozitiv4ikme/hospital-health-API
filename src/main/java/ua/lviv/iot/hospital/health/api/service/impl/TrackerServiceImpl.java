@@ -79,8 +79,8 @@ public class TrackerServiceImpl implements TrackerService {
   @Override
   public void addData(long patientId, List<TrackerData> trackerDataList) {
     trackerDataList.forEach(trackerData -> {
-      if (!Objects.equals(patientId, trackerData.getPatientId())) {
-        String message = "trackerData.patientId does not match patientId";
+      if (trackerData.getPatientId() !=0  && patientId != trackerData.getPatientId()) {
+        String message = "trackerData.patientId is not empty and does not match patientId";
         log.error(message);
         throw new TrackerServiceException(message);
       }

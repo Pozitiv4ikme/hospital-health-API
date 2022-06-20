@@ -137,6 +137,35 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "Get all Hospital Patients with status filter",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8888/v1/api/hospitals/1/patients?status=LIGHT_SICK",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8888",
+									"path": [
+										"v1",
+										"api",
+										"hospitals",
+										"1",
+										"patients"
+									],
+									"query": [
+										{
+											"key": "status",
+											"value": "LIGHT_SICK"
+										}
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				},

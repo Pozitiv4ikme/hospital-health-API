@@ -29,7 +29,7 @@ public class HospitalRepositoryImpl implements HospitalRepository {
   }
 
   @Override
-  public void update(Hospital hospital, long id) {
+  public void update(long id, Hospital hospital) {
     if (getById(id).isEmpty()) {
       String message = "Cannot update hospital, because hospital with id " + id + " does not exist";
       log.error(message);

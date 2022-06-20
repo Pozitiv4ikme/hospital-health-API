@@ -44,8 +44,8 @@ public class BuildingServiceImpl implements BuildingService {
   }
 
   @Override
-  public void update(Building building, long id) {
-    buildingRepository.update(building, id);
+  public void update(long id, Building building) {
+    buildingRepository.update(id, building);
   }
 
   @Override
