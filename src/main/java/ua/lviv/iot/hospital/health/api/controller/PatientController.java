@@ -49,23 +49,23 @@ public final class PatientController {
   }
 
   @GetMapping("{id}")
-  public Optional<PatientDto> getById(@PathVariable("id") final int id) {
+  public Optional<PatientDto> getById(@PathVariable("id") final long id) {
     return patientService.getById(id);
   }
 
   @GetMapping("{id}/status")
-  public HealthStatus getPatientStatusById(@PathVariable("id") final int id) {
+  public HealthStatus getPatientStatusById(@PathVariable("id") final long id) {
     return patientService.getStatusById(id);
   }
 
   @GetMapping("{id}/trackerData")
-  public List<TrackerData> patientTrackerData(@PathVariable("id") final int patientId) {
+  public List<TrackerData> getPatientTrackerData(@PathVariable("id") final long patientId) {
     return trackerService.getDataByPatientId(patientId);
   }
 
   @PostMapping("{id}/trackerData")
   @ResponseStatus(HttpStatus.ACCEPTED)
-  public HealthStatus addPatientTrackerData(@PathVariable("id") final int patientId,
+  public HealthStatus addPatientTrackerData(@PathVariable("id") final long patientId,
       @RequestBody final List<TrackerData> trackerDataList) throws Exception {
     trackerService.addData(patientId, trackerDataList);
     return trackerService.getHealthStatus(trackerDataList);

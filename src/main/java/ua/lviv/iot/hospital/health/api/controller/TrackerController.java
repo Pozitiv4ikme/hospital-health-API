@@ -29,7 +29,7 @@ public final class TrackerController {
   }
 
   @PutMapping("{id}")
-  public void update(@PathVariable("id") final long id, @RequestBody Tracker tracker) {
+  public void update(@PathVariable("id") final long id, @RequestBody final Tracker tracker) {
     trackerService.update(id, tracker);
   }
 
@@ -49,7 +49,7 @@ public final class TrackerController {
   }
 
   @GetMapping("{id}/data")
-  public List<TrackerData> getTrackerDataById(@PathVariable("id") final int id) {
+  public List<TrackerData> getTrackerDataById(@PathVariable("id") final long id) {
     return trackerService.getDataById(id);
   }
 
