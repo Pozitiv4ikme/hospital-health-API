@@ -8,5 +8,7 @@ public record HospitalDto(long id,
                           List<BuildingDto> buildings) {
 
   @Builder
-  public HospitalDto {}
+  public HospitalDto {
+
+  }
 }

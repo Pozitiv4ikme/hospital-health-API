@@ -11,6 +11,7 @@ public record TrackerDto(long id,
                          List<TrackerData> trackerData) {
 
   @Builder
-  public TrackerDto {}
+  public TrackerDto {
 
+  }
 }

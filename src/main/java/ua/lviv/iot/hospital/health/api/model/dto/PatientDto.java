@@ -12,6 +12,7 @@ public record PatientDto(long id,
                          List<TrackerDto> trackers) {
 
   @Builder
-  public PatientDto {}
+  public PatientDto {
 
+  }
 }

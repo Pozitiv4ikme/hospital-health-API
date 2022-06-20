@@ -20,129 +20,129 @@ public class BuildingStorageTest extends BaseStorageTest {
   @Test
   void testWriteToFileAndLoadFromFile() {
     // given
-    var expectedBuildings = List.of(buildBuilding(1), buildBuilding(2), buildBuilding(3));
+    final var expectedBuildings = List.of(buildBuilding(1), buildBuilding(2), buildBuilding(3));
     buildingStorage.writeBuildings(expectedBuildings, LocalDate.now());
     buildingStorage.loadFromFiles();
 
     // when
-    var actualBuildings = buildingStorage.getAll();
+    final var actualBuildings = buildingStorage.getAll();
 
     // then
-    assertThat(actualBuildings).containsAll(expectedBuildings);
+    assertThat(actualBuildings).containsExactlyInAnyOrderElementsOf(expectedBuildings);
   }
 
   @Test
   void testWriteToSeveralFilesAndLoadFromThem() {
     // given
-    var day1 = LocalDate.now().withDayOfMonth(1);
-    var buildingsDay1 = List.of(buildBuilding(1, day1),
+    final var day1 = LocalDate.now().withDayOfMonth(1);
+    final var buildingsDay1 = List.of(buildBuilding(1, day1),
         buildBuilding(2, day1), buildBuilding(3, day1));
     buildingStorage.writeBuildings(buildingsDay1, day1);
 
-    var day2 = LocalDate.now().withDayOfMonth(2);
-    var buildingsDay2 = List.of(buildBuilding(4, day2),
+    final var day2 = LocalDate.now().withDayOfMonth(2);
+    final var buildingsDay2 = List.of(buildBuilding(4, day2),
         buildBuilding(5, day2), buildBuilding(6, day2));
     buildingStorage.writeBuildings(buildingsDay2, day2);
 
-    var day3 = LocalDate.now().withDayOfMonth(3);
-    var buildingsDay3 = List.of(buildBuilding(7, day3),
+    final var day3 = LocalDate.now().withDayOfMonth(3);
+    final var buildingsDay3 = List.of(buildBuilding(7, day3),
         buildBuilding(8, day3), buildBuilding(9, day3));
     buildingStorage.writeBuildings(buildingsDay3, day3);
 
-    var expectedBuildings = Stream.of(buildingsDay1, buildingsDay2, buildingsDay3)
+    final var expectedBuildings = Stream.of(buildingsDay1, buildingsDay2, buildingsDay3)
         .flatMap(Collection::stream)
         .toList();
 
     buildingStorage.loadFromFiles();
 
     // when
-    var actualBuildings = buildingStorage.getAll();
+    final var actualBuildings = buildingStorage.getAll();
 
     // then
-    assertThat(actualBuildings).containsAll(expectedBuildings);
+    assertThat(actualBuildings).containsExactlyInAnyOrderElementsOf(expectedBuildings);
   }
 
   @Test
   void testUpdatedDuplicatedInFiles() {
     // given
-    var day1 = LocalDate.now().withDayOfMonth(1);
-    var buildingsDay1 = List.of(buildBuilding(1, day1),
+    final var day1 = LocalDate.now().withDayOfMonth(1);
+    final var buildingsDay1 = List.of(buildBuilding(1, day1),
         buildBuilding(2, day1), buildBuilding(3, day1));
     buildingStorage.writeBuildings(buildingsDay1, day1);
 
     // update building with id 2
-    var day2 = LocalDate.now().withDayOfMonth(2);
-    var buildingsDay2 = List.of(buildBuilding(4, day2),
+    final var day2 = LocalDate.now().withDayOfMonth(2);
+    final var buildingsDay2 = List.of(buildBuilding(4, day2),
         buildBuilding(2, day2), buildBuilding(5, day2));
     buildingStorage.writeBuildings(buildingsDay2, day2);
 
     // update buildings with id 3 & 4
-    var day3 = LocalDate.now().withDayOfMonth(3);
-    var buildingsDay3 = List.of(buildBuilding(6, day3),
+    final var day3 = LocalDate.now().withDayOfMonth(3);
+    final var buildingsDay3 = List.of(buildBuilding(6, day3),
         buildBuilding(3, day3), buildBuilding(4, day3));
     buildingStorage.writeBuildings(buildingsDay3, day3);
 
     // should load only the latest updated building
-    var expectedBuildings = List.of(buildingsDay1.get(0), buildingsDay1.get(2),
+    final var expectedBuildings = List.of(buildingsDay1.get(0),
         buildingsDay2.get(1), buildingsDay2.get(2),
         buildingsDay3.get(0), buildingsDay3.get(1), buildingsDay3.get(2));
 
     buildingStorage.loadFromFiles();
 
     // when
-    var actualBuildings = buildingStorage.getAll();
+    final var actualBuildings = buildingStorage.getAll();
 
     // then
-    assertThat(actualBuildings).containsAll(expectedBuildings);
+    assertThat(actualBuildings).containsExactlyInAnyOrderElementsOf(expectedBuildings);
   }
 
   @Test
   void testCreateAndGetById() {
     // given
-    var building = buildBuilding(1);
+    final var building = buildBuilding(1);
 
     // when
     buildingStorage.create(building);
 
     // then
-    var actualOptional = buildingStorage.getById(1);
+    final var actualOptional = buildingStorage.getById(1);
     assertThat(actualOptional).isNotEmpty();
 
-    var actual = actualOptional.get();
+    final var actual = actualOptional.get();
     assertThat(actual).isEqualTo(building);
   }
 
   @Test
   void testCreatedReadFromFile() {
     // given
-    var building = buildBuilding(1);
+    final var building = buildBuilding(1);
 
     // when
     buildingStorage.create(building);
     buildingStorage.writeToFile();
 
     // then
-    var buildingsFromFiles = buildingStorage.readBuildingsFromFiles();
+    final var buildingsFromFiles = buildingStorage.readBuildingsFromFiles();
     assertThat(buildingsFromFiles).containsOnly(building);
   }
 
   @Test
   void testUpdate() {
     // given
-    var origin = buildBuilding(1);
+    final var origin = buildBuilding(1);
     buildingStorage.writeBuildings(List.of(origin), LocalDate.now());
     buildingStorage.loadFromFiles();
 
     // when
-    var updated = buildBuilding(1);
+    final var updated = buildBuilding(1);
     updated.setName("Updated name");
     buildingStorage.update(updated, 1);
 
     // then
-    var actualOptional = buildingStorage.getById(1);
+    final var actualOptional = buildingStorage.getById(1);
     assertThat(actualOptional).isNotEmpty();
 
-    var actual = actualOptional.get();
+    final var actual = actualOptional.get();
     assertThat(actual).isNotEqualTo(origin);
     assertThat(actual).isEqualTo(updated);
   }
@@ -150,25 +150,25 @@ public class BuildingStorageTest extends BaseStorageTest {
   @Test
   void testUpdateReadFromFile() {
     // given
-    var origin = buildBuilding(1);
+    final var origin = buildBuilding(1);
     buildingStorage.writeBuildings(List.of(origin), LocalDate.now());
     buildingStorage.loadFromFiles();
 
     // when
-    var updated = buildBuilding(1);
+    final var updated = buildBuilding(1);
     updated.setName("Updated name");
     buildingStorage.update(updated, 1);
     buildingStorage.writeToFile();
 
     // then
-    var buildingsFromFiles = buildingStorage.readBuildingsFromFiles();
+    final var buildingsFromFiles = buildingStorage.readBuildingsFromFiles();
     assertThat(buildingsFromFiles).containsOnly(updated);
   }
 
   @Test
   void testDelete() {
     // given
-    var origin = buildBuilding(1);
+    final var origin = buildBuilding(1);
     buildingStorage.writeBuildings(List.of(origin), LocalDate.now());
     buildingStorage.loadFromFiles();
 
@@ -176,14 +176,14 @@ public class BuildingStorageTest extends BaseStorageTest {
     buildingStorage.deleteById(1);
 
     // then
-    var actualOptional = buildingStorage.getById(1);
+    final var actualOptional = buildingStorage.getById(1);
     assertThat(actualOptional).isEmpty();
   }
 
   @Test
   void testDeletedReadFromFile() {
     // given
-    var origin = buildBuilding(1);
+    final var origin = buildBuilding(1);
     buildingStorage.writeBuildings(List.of(origin), LocalDate.now());
     buildingStorage.loadFromFiles();
 
@@ -192,16 +192,16 @@ public class BuildingStorageTest extends BaseStorageTest {
     buildingStorage.writeToFile();
 
     // then
-    var buildingsFromFiles = buildingStorage.readBuildingsFromFiles();
+    final var buildingsFromFiles = buildingStorage.readBuildingsFromFiles();
     assertThat(buildingsFromFiles).isEmpty();
   }
 
-  private static Building buildBuilding(long id) {
+  private static Building buildBuilding(final long id) {
     return buildBuilding(id, LocalDate.now());
   }
 
-  private static Building buildBuilding(long id, LocalDate date) {
-    var building = new Building();
+  private static Building buildBuilding(final long id, final LocalDate date) {
+    final var building = new Building();
     building.setId(id);
     building.setName("test" + id);
     building.setAddress("address" + id);

@@ -19,27 +19,27 @@ import ua.lviv.iot.hospital.health.api.service.TrackerService;
 @RestController
 @RequestMapping("trackers")
 @RequiredArgsConstructor
-public class TrackerController {
+public final class TrackerController {
 
   private final TrackerService trackerService;
 
   @PostMapping
-  public void create(@RequestBody Tracker tracker) {
+  public void create(@RequestBody final Tracker tracker) {
     trackerService.create(tracker);
   }
 
   @PutMapping("{id}")
-  public void update(@PathVariable("id") long id, @RequestBody Tracker tracker) {
+  public void update(@PathVariable("id") final long id, @RequestBody Tracker tracker) {
     trackerService.update(id, tracker);
   }
 
   @DeleteMapping("{id}")
-  public void delete(@PathVariable("id") long id) {
+  public void delete(@PathVariable("id") final long id) {
     trackerService.deleteById(id);
   }
 
   @GetMapping("{id}")
-  public Optional<TrackerDto> getById(@PathVariable("id") long id) {
+  public Optional<TrackerDto> getById(@PathVariable("id") final long id) {
     return trackerService.getById(id);
   }
 
@@ -49,7 +49,7 @@ public class TrackerController {
   }
 
   @GetMapping("{id}/data")
-  public List<TrackerData> getTrackerDataById(@PathVariable("id") int id) {
+  public List<TrackerData> getTrackerDataById(@PathVariable("id") final int id) {
     return trackerService.getDataById(id);
   }
 

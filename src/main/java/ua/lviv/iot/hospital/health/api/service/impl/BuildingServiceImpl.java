@@ -13,13 +13,13 @@ import ua.lviv.iot.hospital.health.api.service.RoomService;
 
 @Service
 @RequiredArgsConstructor
-public class BuildingServiceImpl implements BuildingService {
+public final class BuildingServiceImpl implements BuildingService {
 
   private final BuildingRepository buildingRepository;
   private final RoomService roomService;
 
   @Override
-  public Optional<BuildingDto> getById(long id) {
+  public Optional<BuildingDto> getById(final long id) {
     return buildingRepository.getById(id)
         .map(building -> buildBuildingDto(building, roomService.getAllByBuildingId(id)));
   }
@@ -32,28 +32,28 @@ public class BuildingServiceImpl implements BuildingService {
   }
 
   @Override
-  public List<BuildingDto> getAllByHospitalId(long hospitalId) {
+  public List<BuildingDto> getAllByHospitalId(final long hospitalId) {
     return getAll().stream()
         .filter(buildingDto -> buildingDto.hospitalId() == hospitalId)
         .toList();
   }
 
   @Override
-  public void create(Building building) {
+  public void create(final Building building) {
     buildingRepository.create(building);
   }
 
   @Override
-  public void update(long id, Building building) {
+  public void update(final long id, final Building building) {
     buildingRepository.update(id, building);
   }
 
   @Override
-  public void deleteById(long id) {
+  public void deleteById(final long id) {
     buildingRepository.deleteById(id);
   }
 
-  private BuildingDto buildBuildingDto(Building building, List<RoomDto> rooms) {
+  private BuildingDto buildBuildingDto(final Building building, final List<RoomDto> rooms) {
     return BuildingDto.builder()
         .id(building.getId())
         .name(building.getName())

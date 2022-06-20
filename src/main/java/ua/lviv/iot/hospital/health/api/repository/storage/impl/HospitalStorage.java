@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +29,7 @@ import ua.lviv.iot.hospital.health.api.repository.storage.MutableStorage;
 
 @Slf4j
 @Component
-public class HospitalStorage extends AbstractStorage implements MutableStorage<Hospital> {
+public final class HospitalStorage extends AbstractStorage implements MutableStorage<Hospital> {
 
   public static final Map<Long, Hospital> HOSPITALS = new HashMap<>();
 
@@ -49,19 +48,19 @@ public class HospitalStorage extends AbstractStorage implements MutableStorage<H
   private LocalDate updateDate;
 
   @Override
-  public void create(Hospital hospital) {
+  public void create(final Hospital hospital) {
     updateDate = checkUpdateDate(updateDate);
     HOSPITALS.put(hospital.getId(), hospital);
   }
 
   @Override
-  public void update(Hospital hospital, long id) {
+  public void update(final Hospital hospital, long id) {
     hospital.setUpdatedDate(updateDate);
     HOSPITALS.replace(id, hospital);
   }
 
   @Override
-  public void deleteById(long id) {
+  public void deleteById(final long id) {
     HOSPITALS.remove(id);
   }
 
@@ -91,7 +90,7 @@ public class HospitalStorage extends AbstractStorage implements MutableStorage<H
     HOSPITALS.clear();
   }
 
-  void writeHospitals(List<Hospital> hospitals, LocalDate updateDate) {
+  void writeHospitals(final List<Hospital> hospitals, final LocalDate updateDate) {
     var hospitalFilePath = String.format(hospitalFilePattern, updateDate.format(FORMATTER));
     var filePath = Paths.get(folderName + "/" + hospitalFilePath);
 
@@ -119,7 +118,7 @@ public class HospitalStorage extends AbstractStorage implements MutableStorage<H
     return List.of();
   }
 
-  private void writeHospitalsToFile(File file, List<Hospital> hospitals) {
+  private void writeHospitalsToFile(final File file, final List<Hospital> hospitals) {
     try (var writer = Files.newBufferedWriter(file.toPath())) {
       writer.write(Hospital.HEADERS + "\n");
       StatefulBeanToCsv<Hospital> csvWriter = new StatefulBeanToCsvBuilder<Hospital>(writer)
@@ -138,12 +137,12 @@ public class HospitalStorage extends AbstractStorage implements MutableStorage<H
     }
   }
 
-  private boolean isHospitalFileForRead(String fileName) {
+  private boolean isHospitalFileForRead(final String fileName) {
     return fileName.startsWith(hospitalFileStart + LocalDate.now().format(MONTH_FORMATTER))
         && fileName.endsWith(fileEnd);
   }
 
-  private List<Hospital> readHospitalsFromFile(File file) {
+  private List<Hospital> readHospitalsFromFile(final File file) {
     try {
       return new CsvToBeanBuilder<Hospital>(Files.newBufferedReader(file.toPath()))
           .withType(Hospital.class)
@@ -156,7 +155,7 @@ public class HospitalStorage extends AbstractStorage implements MutableStorage<H
     }
   }
 
-  private List<Hospital> getAllByDate(LocalDate date) {
+  private List<Hospital> getAllByDate(final LocalDate date) {
     return getAll().stream()
         .filter(hospital -> date.equals(hospital.getUpdatedDate()))
         .toList();

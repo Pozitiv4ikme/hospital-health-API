@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +29,7 @@ import ua.lviv.iot.hospital.health.api.repository.storage.MutableStorage;
 
 @Component
 @Slf4j
-public class BuildingStorage extends AbstractStorage implements MutableStorage<Building> {
+public final class BuildingStorage extends AbstractStorage implements MutableStorage<Building> {
 
   private static final Map<Long, Building> BUILDINGS = new HashMap<>();
 
@@ -49,19 +48,19 @@ public class BuildingStorage extends AbstractStorage implements MutableStorage<B
   private LocalDate updateDate;
 
   @Override
-  public void create(Building building) {
+  public void create(final Building building) {
     updateDate = checkUpdateDate(updateDate);
     BUILDINGS.put(building.getId(), building);
   }
 
   @Override
-  public void update(Building building, long id) {
+  public void update(final Building building, long id) {
     building.setUpdatedDate(updateDate);
     BUILDINGS.replace(id, building);
   }
 
   @Override
-  public void deleteById(long id) {
+  public void deleteById(final long id) {
     BUILDINGS.remove(id);
   }
 
@@ -71,7 +70,7 @@ public class BuildingStorage extends AbstractStorage implements MutableStorage<B
   }
 
   @Override
-  public Optional<Building> getById(long id) {
+  public Optional<Building> getById(final long id) {
     return Optional.ofNullable(BUILDINGS.get(id));
   }
 
@@ -91,7 +90,7 @@ public class BuildingStorage extends AbstractStorage implements MutableStorage<B
     BUILDINGS.clear();
   }
 
-  void writeBuildings(List<Building> buildings, LocalDate updateDate) {
+  void writeBuildings(final List<Building> buildings, final LocalDate updateDate) {
     var buildingFilePath = String.format(buildingFilePattern, updateDate.format(FORMATTER));
     var filePath = Paths.get(folderName + "/" + buildingFilePath);
 
@@ -119,7 +118,7 @@ public class BuildingStorage extends AbstractStorage implements MutableStorage<B
     return List.of();
   }
 
-  private void writeBuildingsToFile(File file, List<Building> buildings) {
+  private void writeBuildingsToFile(final File file, final List<Building> buildings) {
     try (var writer = Files.newBufferedWriter(file.toPath())) {
       writer.write(Building.HEADERS + "\n");
       StatefulBeanToCsv<Building> csvWriter = new StatefulBeanToCsvBuilder<Building>(writer)
@@ -138,12 +137,12 @@ public class BuildingStorage extends AbstractStorage implements MutableStorage<B
     }
   }
 
-  private boolean isBuildingFileForRead(String fileName) {
+  private boolean isBuildingFileForRead(final String fileName) {
     return fileName.startsWith(buildingFileStart + LocalDate.now().format(MONTH_FORMATTER))
         && fileName.endsWith(fileEnd);
   }
 
-  private List<Building> readBuildingsFromFile(File file) {
+  private List<Building> readBuildingsFromFile(final File file) {
     try {
       return new CsvToBeanBuilder<Building>(Files.newBufferedReader(file.toPath()))
           .withType(Building.class)
@@ -156,7 +155,7 @@ public class BuildingStorage extends AbstractStorage implements MutableStorage<B
     }
   }
 
-  private List<Building> getAllByDate(LocalDate date) {
+  private List<Building> getAllByDate(final LocalDate date) {
     return getAll().stream()
         .filter(building -> date.equals(building.getUpdatedDate()))
         .toList();

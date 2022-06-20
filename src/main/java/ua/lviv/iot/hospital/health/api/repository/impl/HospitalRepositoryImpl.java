@@ -14,12 +14,12 @@ import ua.lviv.iot.hospital.health.api.repository.storage.impl.HospitalStorage;
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-public class HospitalRepositoryImpl implements HospitalRepository {
+public final class HospitalRepositoryImpl implements HospitalRepository {
 
   private final HospitalStorage hospitalStorage;
 
   @Override
-  public void create(Hospital hospital) {
+  public void create(final Hospital hospital) {
     if (getById(hospital.getId()).isPresent()) {
       String message = "Cannot create hospital, because hospital with id " + hospital.getId() + " already exists";
       log.error(message);
@@ -30,7 +30,7 @@ public class HospitalRepositoryImpl implements HospitalRepository {
   }
 
   @Override
-  public void update(long id, Hospital hospital) {
+  public void update(final long id, final Hospital hospital) {
     if (getById(id).isEmpty()) {
       String message = "Cannot update hospital, because hospital with id " + id + " does not exist";
       log.error(message);
@@ -41,7 +41,7 @@ public class HospitalRepositoryImpl implements HospitalRepository {
   }
 
   @Override
-  public void deleteById(long id) {
+  public void deleteById(final long id) {
     hospitalStorage.deleteById(id);
   }
 
@@ -51,7 +51,7 @@ public class HospitalRepositoryImpl implements HospitalRepository {
   }
 
   @Override
-  public Optional<Hospital> getById(long id) {
+  public Optional<Hospital> getById(final long id) {
     return hospitalStorage.getById(id);
   }
 

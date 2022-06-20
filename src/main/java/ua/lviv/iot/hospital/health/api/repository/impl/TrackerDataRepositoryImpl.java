@@ -9,7 +9,7 @@ import ua.lviv.iot.hospital.health.api.repository.storage.impl.TrackerDataStorag
 
 @Repository
 @RequiredArgsConstructor
-public class TrackerDataRepositoryImpl implements TrackerDataRepository {
+public final class TrackerDataRepositoryImpl implements TrackerDataRepository {
 
   private final TrackerDataStorage trackerDataStorage;
 
@@ -19,17 +19,17 @@ public class TrackerDataRepositoryImpl implements TrackerDataRepository {
   }
 
   @Override
-  public List<TrackerData> getDataByPatientId(long patientId) {
+  public List<TrackerData> getDataByPatientId(final long patientId) {
     return trackerDataStorage.getDataByPatientId(patientId);
   }
 
   @Override
-  public List<TrackerData> getDataById(long id) {
+  public List<TrackerData> getDataById(final long id) {
     return trackerDataStorage.getDataByTrackerId(id);
   }
 
   @Override
-  public void saveDataForPatientId(long patientId, List<TrackerData> trackerDataList) {
+  public void saveDataForPatientId(final long patientId, final List<TrackerData> trackerDataList) {
     trackerDataStorage.saveData(patientId, trackerDataList);
   }
 }

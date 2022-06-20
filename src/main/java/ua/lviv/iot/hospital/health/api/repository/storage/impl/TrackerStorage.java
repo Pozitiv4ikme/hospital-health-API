@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -49,13 +48,13 @@ public class TrackerStorage extends AbstractStorage implements MutableStorage<Tr
   private LocalDate updateDate;
 
   @Override
-  public void create(Tracker tracker) {
+  public void create(final Tracker tracker) {
     updateDate = checkUpdateDate(updateDate);
     TRACKERS.put(tracker.getId(), tracker);
   }
 
   @Override
-  public void update(Tracker tracker, long id) {
+  public void update(final Tracker tracker, final long id) {
     tracker.setUpdatedDate(updateDate);
     TRACKERS.replace(id, tracker);
   }
@@ -71,7 +70,7 @@ public class TrackerStorage extends AbstractStorage implements MutableStorage<Tr
   }
 
   @Override
-  public Optional<Tracker> getById(long id) {
+  public Optional<Tracker> getById(final long id) {
     return Optional.ofNullable(TRACKERS.get(id));
   }
 
@@ -91,7 +90,7 @@ public class TrackerStorage extends AbstractStorage implements MutableStorage<Tr
     TRACKERS.clear();
   }
 
-  void writeTrackers(List<Tracker> trackers, LocalDate updateDate) {
+  void writeTrackers(final List<Tracker> trackers, final LocalDate updateDate) {
     var trackerFilePath = String.format(trackerFilePattern, updateDate.format(FORMATTER));
     var filePath = Paths.get(folderName + "/" + trackerFilePath);
 
@@ -119,7 +118,7 @@ public class TrackerStorage extends AbstractStorage implements MutableStorage<Tr
     return List.of();
   }
 
-  private void writeTrackersToFile(File file, List<Tracker> trackers) {
+  private void writeTrackersToFile(final File file, final List<Tracker> trackers) {
     try (var writer = Files.newBufferedWriter(file.toPath())) {
       writer.write(Tracker.HEADERS + "\n");
       StatefulBeanToCsv<Tracker> csvWriter = new StatefulBeanToCsvBuilder<Tracker>(writer)
@@ -138,12 +137,12 @@ public class TrackerStorage extends AbstractStorage implements MutableStorage<Tr
     }
   }
 
-  private boolean isTrackerFileForRead(String fileName) {
+  private boolean isTrackerFileForRead(final String fileName) {
     return fileName.startsWith(trackerFileStart + LocalDate.now().format(MONTH_FORMATTER))
         && fileName.endsWith(fileEnd);
   }
 
-  private List<Tracker> readTrackersFromFile(File file) {
+  private List<Tracker> readTrackersFromFile(final File file) {
     try {
       return new CsvToBeanBuilder<Tracker>(Files.newBufferedReader(file.toPath()))
           .withType(Tracker.class)
@@ -156,7 +155,7 @@ public class TrackerStorage extends AbstractStorage implements MutableStorage<Tr
     }
   }
 
-  private List<Tracker> getAllByDate(LocalDate date) {
+  private List<Tracker> getAllByDate(final LocalDate date) {
     return getAll().stream()
         .filter(tracker -> date.equals(tracker.getUpdatedDate()))
         .toList();

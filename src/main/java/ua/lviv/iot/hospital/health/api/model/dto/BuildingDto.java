@@ -10,5 +10,7 @@ public record BuildingDto(long id,
                           List<RoomDto> rooms) {
 
   @Builder
-  public BuildingDto {}
+  public BuildingDto {
+
+  }
 }

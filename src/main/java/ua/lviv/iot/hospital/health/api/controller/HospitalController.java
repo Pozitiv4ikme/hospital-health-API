@@ -64,7 +64,7 @@ public final class HospitalController {
 
   @GetMapping("{id}/buildings/{buildingId}/rooms")
   public List<RoomDto> getAllRoomsByHospitalIdAndBuildingId(@PathVariable("id") final long hospitalId,
-      @PathVariable("buildingId") long buildingId) {
+      @PathVariable("buildingId") final long buildingId) {
     return getAllBuildingsByHospitalId(hospitalId).stream()
         .filter(buildingDto -> buildingDto.id() == buildingId)
         .flatMap(buildingDto -> buildingDto.rooms().stream())
@@ -73,7 +73,7 @@ public final class HospitalController {
 
   @GetMapping("{id}/buildings/{buildingId}/rooms/{roomId}/patients")
   public List<PatientDto> getAllPatientsByHospitalIdAndBuildingIdAndRoomId(@PathVariable("id") final long hospitalId,
-      @PathVariable("buildingId") long buildingId, @PathVariable("roomId") long roomId) {
+      @PathVariable("buildingId") final long buildingId, @PathVariable("roomId") final long roomId) {
     return getAllRoomsByHospitalIdAndBuildingId(hospitalId, buildingId).stream()
         .filter(roomDto -> roomDto.id() == roomId)
         .flatMap(roomDto -> roomDto.patients().stream())

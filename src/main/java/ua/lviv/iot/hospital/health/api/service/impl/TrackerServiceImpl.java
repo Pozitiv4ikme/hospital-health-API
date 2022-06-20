@@ -2,7 +2,6 @@ package ua.lviv.iot.hospital.health.api.service.impl;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -21,13 +20,13 @@ import ua.lviv.iot.hospital.health.api.service.TrackerService;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class TrackerServiceImpl implements TrackerService {
+public final class TrackerServiceImpl implements TrackerService {
 
   private final TrackerRepository trackerRepository;
   private final TrackerDataRepository trackerDataRepository;
 
   @Override
-  public Optional<TrackerDto> getById(long id) {
+  public Optional<TrackerDto> getById(final long id) {
     return trackerRepository.getById(id)
         .map(tracker -> buildTrackerDto(tracker, getDataById(id)));
   }
@@ -40,22 +39,22 @@ public class TrackerServiceImpl implements TrackerService {
   }
 
   @Override
-  public void create(Tracker tracker) {
+  public void create(final Tracker tracker) {
     trackerRepository.create(tracker);
   }
 
   @Override
-  public void update(long id, Tracker tracker) {
+  public void update(final long id, final Tracker tracker) {
     trackerRepository.update(id, tracker);
   }
 
   @Override
-  public void deleteById(long id) {
+  public void deleteById(final long id) {
     trackerRepository.deleteById(id);
   }
 
   @Override
-  public List<TrackerDto> getAllByPatientId(long patientId) {
+  public List<TrackerDto> getAllByPatientId(final long patientId) {
     var trackerDataMap = getDataByPatientId(patientId).stream()
         .collect(Collectors.groupingBy(TrackerData::getTrackerId));
     return trackerDataMap.keySet().stream()
@@ -67,17 +66,17 @@ public class TrackerServiceImpl implements TrackerService {
   }
 
   @Override
-  public List<TrackerData> getDataById(long id) {
+  public List<TrackerData> getDataById(final long id) {
     return trackerDataRepository.getDataById(id);
   }
 
   @Override
-  public List<TrackerData> getDataByPatientId(long patientId) {
+  public List<TrackerData> getDataByPatientId(final long patientId) {
     return trackerDataRepository.getDataByPatientId(patientId);
   }
 
   @Override
-  public void addData(long patientId, List<TrackerData> trackerDataList) {
+  public void addData(final long patientId, final List<TrackerData> trackerDataList) {
     trackerDataList.forEach(trackerData -> {
       if (trackerData.getPatientId() !=0  && patientId != trackerData.getPatientId()) {
         String message = "trackerData.patientId is not empty and does not match patientId";
@@ -89,24 +88,24 @@ public class TrackerServiceImpl implements TrackerService {
   }
 
   @Override
-  public HealthStatus getHealthStatus(List<TrackerData> trackerDataList) {
+  public HealthStatus getHealthStatus(final List<TrackerData> trackerDataList) {
     return trackerDataList.stream()
         .map(this::getTrackerHealthStatus)
         .reduce(HealthStatus.UNKNOWN, this::reduceHealthStatus);
   }
 
-  private HealthStatus getTrackerHealthStatus(TrackerData trackerData) {
+  private HealthStatus getTrackerHealthStatus(final TrackerData trackerData) {
     return Arrays.stream(HealthCategory.values())
         .filter(category -> hasTrackerDataInRanges(category, trackerData))
         .map(HealthCategory::getStatus)
         .reduce(HealthStatus.UNKNOWN, this::reduceHealthStatus);
   }
 
-  private HealthStatus reduceHealthStatus(HealthStatus s1, HealthStatus s2) {
+  private HealthStatus reduceHealthStatus(final HealthStatus s1, final HealthStatus s2) {
     return s1.getPriority() > s2.getPriority() ? s1 : s2;
   }
 
-  private boolean hasTrackerDataInRanges(HealthCategory category, TrackerData trackerData) {
+  private boolean hasTrackerDataInRanges(final HealthCategory category, final TrackerData trackerData) {
     var values = trackerData.getValues();
     var ranges = category.getTypeRangeMap().get(trackerData.getType());
     boolean isInRange = false;
@@ -119,7 +118,7 @@ public class TrackerServiceImpl implements TrackerService {
     return isInRange;
   }
 
-  private TrackerDto buildTrackerDto(Tracker tracker, List<TrackerData> trackerData) {
+  private TrackerDto buildTrackerDto(final Tracker tracker, final List<TrackerData> trackerData) {
     return TrackerDto.builder()
         .id(tracker.getId())
         .model(tracker.getModel())

@@ -9,6 +9,7 @@ public record RoomDto(long id,
                       List<PatientDto> patients) {
 
   @Builder
-  public RoomDto {}
+  public RoomDto {
 
+  }
 }

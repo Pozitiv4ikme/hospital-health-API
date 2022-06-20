@@ -15,13 +15,13 @@ import ua.lviv.iot.hospital.health.api.repository.storage.impl.RoomStorage;
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-public class RoomRepositoryImpl implements RoomRepository {
+public final class RoomRepositoryImpl implements RoomRepository {
 
   private final RoomStorage roomStorage;
   private final BuildingRepository buildingRepository;
 
   @Override
-  public void create(Room room) {
+  public void create(final Room room) {
     if (getById(room.getId()).isPresent()) {
       String message = "Cannot create room, because room with id " + room.getId() + " already exists";
       log.error(message);
@@ -33,7 +33,7 @@ public class RoomRepositoryImpl implements RoomRepository {
   }
 
   @Override
-  public void update(long id, Room room) {
+  public void update(final long id, final Room room) {
     if (getById(id).isEmpty()) {
       String message = "Cannot update room, because room with id " + id + " does not exist";
       log.error(message);
@@ -45,7 +45,7 @@ public class RoomRepositoryImpl implements RoomRepository {
   }
 
   @Override
-  public void deleteById(long id) {
+  public void deleteById(final long id) {
     roomStorage.deleteById(id);
   }
 
@@ -55,11 +55,11 @@ public class RoomRepositoryImpl implements RoomRepository {
   }
 
   @Override
-  public Optional<Room> getById(long id) {
+  public Optional<Room> getById(final long id) {
     return roomStorage.getById(id);
   }
 
-  private void doesBuildingExist(Room room) {
+  private void doesBuildingExist(final Room room) {
     if (buildingRepository.getById(room.getBuildingId()).isEmpty()) {
       String message = "Building with id " + room.getBuildingId() + " does not exist";
       log.error(message);

@@ -14,12 +14,12 @@ import ua.lviv.iot.hospital.health.api.repository.storage.impl.TrackerStorage;
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-public class TrackerRepositoryImpl implements TrackerRepository {
+public final class TrackerRepositoryImpl implements TrackerRepository {
 
   private final TrackerStorage trackerStorage;
 
   @Override
-  public void create(Tracker tracker) {
+  public void create(final Tracker tracker) {
     if (getById(tracker.getId()).isPresent()) {
       String message = "Cannot create tracker, because tracker with id " + tracker.getId() + " already exists";
       log.error(message);
@@ -30,7 +30,7 @@ public class TrackerRepositoryImpl implements TrackerRepository {
   }
 
   @Override
-  public void update(long id, Tracker tracker) {
+  public void update(final long id, final Tracker tracker) {
     if (getById(id).isEmpty()) {
       String message = "Cannot update tracker, because tracker with id " + id + " does not exist";
       log.error(message);
@@ -41,7 +41,7 @@ public class TrackerRepositoryImpl implements TrackerRepository {
   }
 
   @Override
-  public void deleteById(long id) {
+  public void deleteById(final long id) {
     trackerStorage.deleteById(id);
   }
 
@@ -51,7 +51,7 @@ public class TrackerRepositoryImpl implements TrackerRepository {
   }
 
   @Override
-  public Optional<Tracker> getById(long id) {
+  public Optional<Tracker> getById(final long id) {
     return trackerStorage.getById(id);
   }
 

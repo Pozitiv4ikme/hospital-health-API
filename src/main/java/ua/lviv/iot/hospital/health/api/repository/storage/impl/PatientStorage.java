@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +29,7 @@ import ua.lviv.iot.hospital.health.api.repository.storage.MutableStorage;
 
 @Slf4j
 @Component
-public class PatientStorage extends AbstractStorage implements MutableStorage<Patient> {
+public final class PatientStorage extends AbstractStorage implements MutableStorage<Patient> {
 
   private static final Map<Long, Patient> PATIENTS = new HashMap<>();
 
@@ -49,18 +48,18 @@ public class PatientStorage extends AbstractStorage implements MutableStorage<Pa
   private LocalDate updateDate;
 
   @Override
-  public void create(Patient patient) {
+  public void create(final Patient patient) {
     updateDate = checkUpdateDate(updateDate);
     PATIENTS.put(patient.getId(), patient);
   }
 
   @Override
-  public void update(Patient patient, long id) {
+  public void update(final Patient patient, final long id) {
     PATIENTS.replace(id, patient);
   }
 
   @Override
-  public void deleteById(long id) {
+  public void deleteById(final long id) {
     PATIENTS.remove(id);
   }
 
@@ -70,7 +69,7 @@ public class PatientStorage extends AbstractStorage implements MutableStorage<Pa
   }
 
   @Override
-  public Optional<Patient> getById(long id) {
+  public Optional<Patient> getById(final long id) {
     return Optional.ofNullable(PATIENTS.get(id));
   }
 
@@ -90,7 +89,7 @@ public class PatientStorage extends AbstractStorage implements MutableStorage<Pa
     PATIENTS.clear();
   }
 
-  void writePatients(List<Patient> patients, LocalDate updateDate) {
+  void writePatients(final List<Patient> patients, final LocalDate updateDate) {
     var patientDataFilePath = String.format(patientFilePattern, updateDate.format(FORMATTER));
     var filePath = Paths.get(folderName + "/" + patientDataFilePath);
 
@@ -118,7 +117,7 @@ public class PatientStorage extends AbstractStorage implements MutableStorage<Pa
     return List.of();
   }
 
-  private void writePatientsToFile(File file, List<Patient> patients) {
+  private void writePatientsToFile(final File file, final List<Patient> patients) {
     try (var writer = Files.newBufferedWriter(file.toPath())) {
       writer.write(Patient.HEADERS + "\n");
       StatefulBeanToCsv<Patient> csvWriter = new StatefulBeanToCsvBuilder<Patient>(writer)
@@ -137,12 +136,12 @@ public class PatientStorage extends AbstractStorage implements MutableStorage<Pa
     }
   }
 
-  private boolean isPatientFileForRead(String fileName) {
+  private boolean isPatientFileForRead(final String fileName) {
     return fileName.startsWith(patientFileStart + LocalDate.now().format(MONTH_FORMATTER))
         && fileName.endsWith(fileEnd);
   }
 
-  private List<Patient> readPatientsFromFile(File file) {
+  private List<Patient> readPatientsFromFile(final File file) {
     try {
       return new CsvToBeanBuilder<Patient>(Files.newBufferedReader(file.toPath()))
           .withType(Patient.class)

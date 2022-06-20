@@ -19,23 +19,23 @@ import ua.lviv.iot.hospital.health.api.service.RoomService;
 @RestController
 @RequestMapping("rooms")
 @RequiredArgsConstructor
-public class RoomController {
+public final class RoomController {
 
   private final RoomService roomService;
   private final PatientService patientService;
 
   @PostMapping
-  public void create(@RequestBody Room room) {
+  public void create(@RequestBody final Room room) {
     roomService.create(room);
   }
 
   @GetMapping("{id}")
-  public Optional<RoomDto> getById(@PathVariable("id") long id) {
+  public Optional<RoomDto> getById(@PathVariable("id") final long id) {
     return roomService.getById(id);
   }
 
   @PutMapping("{id}")
-  public void update(@PathVariable("id") long id, @RequestBody Room room) {
+  public void update(@PathVariable("id") final long id, @RequestBody final Room room) {
     roomService.update(id, room);
   }
 
@@ -45,12 +45,12 @@ public class RoomController {
   }
 
   @DeleteMapping("{id}")
-  public void delete(@PathVariable("id") long id) {
+  public void delete(@PathVariable("id") final long id) {
     roomService.deleteById(id);
   }
 
   @GetMapping("{id}/patients")
-  public void getAllById(@PathVariable("id") long roomId) {
+  public void getAllById(@PathVariable("id") final long roomId) {
     patientService.getAllByRoomId(roomId);
   }
 }

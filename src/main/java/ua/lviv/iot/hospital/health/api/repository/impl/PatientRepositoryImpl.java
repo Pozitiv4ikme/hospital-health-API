@@ -15,13 +15,13 @@ import ua.lviv.iot.hospital.health.api.repository.storage.impl.PatientStorage;
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-public class PatientRepositoryImpl implements PatientRepository {
+public final class PatientRepositoryImpl implements PatientRepository {
 
   private final PatientStorage patientStorage;
   private final RoomRepository roomRepository;
 
   @Override
-  public void create(Patient patient) {
+  public void create(final Patient patient) {
     if (getById(patient.getId()).isPresent()) {
       String message = "Cannot create patient, because patient with id " + patient.getId() + " already exists";
       log.error(message);
@@ -33,7 +33,7 @@ public class PatientRepositoryImpl implements PatientRepository {
   }
 
   @Override
-  public void update(long id, Patient patient) {
+  public void update(final long id, final Patient patient) {
     if (getById(id).isEmpty()) {
       String message = "Cannot update patient, because patient with id " + id + " does not exist";
       log.error(message);
@@ -45,7 +45,7 @@ public class PatientRepositoryImpl implements PatientRepository {
   }
 
   @Override
-  public void deleteById(long id) {
+  public void deleteById(final long id) {
     patientStorage.deleteById(id);
   }
 
@@ -55,11 +55,11 @@ public class PatientRepositoryImpl implements PatientRepository {
   }
 
   @Override
-  public Optional<Patient> getById(long id) {
+  public Optional<Patient> getById(final long id) {
     return patientStorage.getById(id);
   }
 
-  private void doesRoomExist(Patient patient) {
+  private void doesRoomExist(final Patient patient) {
     if (roomRepository.getById(patient.getRoomId()).isEmpty()) {
       String message = "Room with id " + patient.getRoomId() + " does not exist";
       log.error(message);

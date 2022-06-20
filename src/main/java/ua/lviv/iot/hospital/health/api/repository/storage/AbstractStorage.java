@@ -10,7 +10,7 @@ public abstract class AbstractStorage {
 
   protected abstract void writeToFile();
 
-  protected LocalDate checkUpdateDate(LocalDate updateDate) {
+  protected LocalDate checkUpdateDate(final LocalDate updateDate) {
     var currentDate = LocalDate.now();
     if (!updateDate.equals(currentDate)) {
       writeToFile();

@@ -34,7 +34,7 @@ import ua.lviv.iot.hospital.health.api.repository.storage.ImmutableStorage;
 
 @Slf4j
 @Component
-public class TrackerDataStorage implements ImmutableStorage {
+public final class TrackerDataStorage implements ImmutableStorage {
 
   private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy_MM_dd");
   private static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("yyyy_MM_");
@@ -52,7 +52,7 @@ public class TrackerDataStorage implements ImmutableStorage {
   @Value("${storage.file-end}")
   private String fileEnd;
 
-  public void saveData(long patientId, List<TrackerData> trackerDataList) {
+  public void saveData(final long patientId, final List<TrackerData> trackerDataList) {
     trackerDataList.forEach(trackerData -> trackerData.setPatientId(patientId));
     saveDataToMap(patientId, trackerDataList);
     writeDataToFile(trackerDataList, LocalDate.now());
@@ -65,16 +65,16 @@ public class TrackerDataStorage implements ImmutableStorage {
         .toList();
   }
 
-  public List<TrackerData> getDataByPatientId(long patientId) {
+  public List<TrackerData> getDataByPatientId(final long patientId) {
     return PATIENT_TRACKER_DATA.get(patientId);
   }
 
-  public List<TrackerData> getDataByTrackerId(long id) {
+  public List<TrackerData> getDataByTrackerId(final long id) {
     log.info("getting tracker data for id: " + id);
     return getDataAll().stream().filter(trackerData -> trackerData.getTrackerId() == id).toList();
   }
 
-  void writeDataToFile(List<TrackerData> patientTrackerDataList, LocalDate date) {
+  void writeDataToFile(final List<TrackerData> patientTrackerDataList, final LocalDate date) {
     var trackerDataFilePath = String.format(trackerFilePattern, date.format(FORMATTER));
     var filePath = Paths.get(folderName + "/" + trackerDataFilePath);
 
@@ -127,7 +127,7 @@ public class TrackerDataStorage implements ImmutableStorage {
         .collect(Collectors.groupingBy(TrackerData::getPatientId)));
   }
 
-  private List<TrackerData> readDataFromFile(File file) {
+  private List<TrackerData> readDataFromFile(final File file) {
     try {
       return new CsvToBeanBuilder<TrackerData>(Files.newBufferedReader(file.toPath()))
           .withType(TrackerData.class)
@@ -140,12 +140,12 @@ public class TrackerDataStorage implements ImmutableStorage {
     }
   }
 
-  private boolean isDataFileForRead(String fileName) {
+  private boolean isDataFileForRead(final String fileName) {
     return fileName.startsWith(trackerFileStart + LocalDate.now().format(MONTH_FORMATTER))
         && fileName.endsWith(fileEnd);
   }
 
-  private void saveDataToMap(long patientId, List<TrackerData> trackerDataList) {
+  private void saveDataToMap(final long patientId, final List<TrackerData> trackerDataList) {
     if (PATIENT_TRACKER_DATA.containsKey(patientId)) {
       PATIENT_TRACKER_DATA.get(patientId).addAll(trackerDataList);
     } else {

@@ -15,13 +15,13 @@ import ua.lviv.iot.hospital.health.api.repository.storage.impl.BuildingStorage;
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-public class BuildingRepositoryImpl implements BuildingRepository {
+public final class BuildingRepositoryImpl implements BuildingRepository {
 
   private final BuildingStorage buildingStorage;
   private final HospitalRepository hospitalRepository;
 
   @Override
-  public void create(Building building) {
+  public void create(final Building building) {
     if (getById(building.getId()).isPresent()) {
       String message = "Cannot create building, because building with id " + building.getId() + " already exists";
       log.error(message);
@@ -33,7 +33,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
   }
 
   @Override
-  public void update(long id, Building building) {
+  public void update(final long id, final Building building) {
     if (getById(id).isEmpty()) {
       String message = "Cannot update building, because building with id " + id + " does not exist";
       log.error(message);
@@ -45,7 +45,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
   }
 
   @Override
-  public void deleteById(long id) {
+  public void deleteById(final long id) {
     buildingStorage.deleteById(id);
   }
 
@@ -55,11 +55,11 @@ public class BuildingRepositoryImpl implements BuildingRepository {
   }
 
   @Override
-  public Optional<Building> getById(long id) {
+  public Optional<Building> getById(final long id) {
     return buildingStorage.getById(id);
   }
 
-  private void doesHospitalExist(Building building) {
+  private void doesHospitalExist(final Building building) {
     if (hospitalRepository.getById(building.getHospitalId()).isEmpty()) {
       String message = "Hospital with id " + building.getHospitalId() + " does not exist";
       log.error(message);

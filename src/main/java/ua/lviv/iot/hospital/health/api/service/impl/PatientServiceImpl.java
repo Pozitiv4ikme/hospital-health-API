@@ -14,13 +14,13 @@ import ua.lviv.iot.hospital.health.api.service.TrackerService;
 
 @Service
 @RequiredArgsConstructor
-public class PatientServiceImpl implements PatientService {
+public final  class PatientServiceImpl implements PatientService {
 
   private final PatientRepository patientRepository;
   private final TrackerService trackerService;
 
   @Override
-  public Optional<PatientDto> getById(long id) {
+  public Optional<PatientDto> getById(final long id) {
     return patientRepository.getById(id)
         .map(patient -> buildPatientDto(patient, trackerService.getAllByPatientId(id)));
   }
@@ -33,33 +33,33 @@ public class PatientServiceImpl implements PatientService {
   }
 
   @Override
-  public List<PatientDto> getAllByRoomId(long roomId) {
+  public List<PatientDto> getAllByRoomId(final long roomId) {
     return getAll().stream()
         .filter(patientDto -> patientDto.roomId() == roomId)
         .toList();
   }
 
   @Override
-  public void create(Patient patient) {
+  public void create(final Patient patient) {
     patientRepository.create(patient);
   }
 
   @Override
-  public void update(long id, Patient patient) {
+  public void update(final long id, final Patient patient) {
     patientRepository.update(id, patient);
   }
 
   @Override
-  public void deleteById(long id) {
+  public void deleteById(final long id) {
     patientRepository.deleteById(id);
   }
 
   @Override
-  public HealthStatus getStatusById(long id) {
+  public HealthStatus getStatusById(final long id) {
     return trackerService.getHealthStatus(trackerService.getDataByPatientId(id));
   }
 
-  private PatientDto buildPatientDto(Patient patient, List<TrackerDto> trackers) {
+  private PatientDto buildPatientDto(final Patient patient, final List<TrackerDto> trackers) {
     return PatientDto.builder()
         .id(patient.getId())
         .name(patient.getName())

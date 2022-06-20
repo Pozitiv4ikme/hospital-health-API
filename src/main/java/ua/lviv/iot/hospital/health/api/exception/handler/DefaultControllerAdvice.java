@@ -20,13 +20,13 @@ import ua.lviv.iot.hospital.health.api.exception.tracker.TrackerServiceException
 import ua.lviv.iot.hospital.health.api.exception.tracker.TrackerStorageException;
 
 @RestControllerAdvice
-public class DefaultControllerAdvice {
+public final class DefaultControllerAdvice {
 
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   @ExceptionHandler({BuildingStorageException.class, HospitalStorageException.class,
       PatientStorageException.class, RoomStorageException.class, TrackerStorageException.class,
       TrackerDataStorageException.class})
-  public Map<String, String> handleStorageExceptions(Exception exception) {
+  public Map<String, String> handleStorageExceptions(final Exception exception) {
     return Map.of("message", exception.getMessage(),
                   "type", exception.getClass().getName());
   }
@@ -34,21 +34,21 @@ public class DefaultControllerAdvice {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({BuildingRepositoryException.class, HospitalRepositoryException.class,
       RoomRepositoryException.class, PatientRepositoryException.class, TrackerRepositoryException.class})
-  public Map<String, String> handleRepositoryExceptions(Exception exception) {
+  public Map<String, String> handleRepositoryExceptions(final Exception exception) {
     return Map.of("message", exception.getMessage(),
         "type", exception.getClass().getName());
   }
 
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({TrackerServiceException.class})
-  public Map<String, String> handleServiceExceptions(Exception exception) {
+  public Map<String, String> handleServiceExceptions(final Exception exception) {
     return Map.of("message", exception.getMessage(),
         "type", exception.getClass().getName());
   }
 
   @ResponseStatus(HttpStatus.NOT_FOUND)
   @ExceptionHandler({RepositoryNotFoundException.class})
-  public Map<String, String> handleNotFoundExceptions(Exception exception) {
+  public Map<String, String> handleNotFoundExceptions(final Exception exception) {
     return Map.of("message", exception.getMessage(),
         "type", exception.getClass().getName());
   }
