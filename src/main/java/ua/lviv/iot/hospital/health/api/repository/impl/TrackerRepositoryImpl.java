@@ -21,7 +21,7 @@ public final class TrackerRepositoryImpl implements TrackerRepository {
   @Override
   public void create(final Tracker tracker) {
     if (getById(tracker.getId()).isPresent()) {
-      String message = "Cannot create tracker, because tracker with id " + tracker.getId() + " already exists";
+      final String message = "Cannot create tracker, because tracker with id " + tracker.getId() + " already exists";
       log.error(message);
       throw new TrackerRepositoryException(message);
     }
@@ -32,12 +32,12 @@ public final class TrackerRepositoryImpl implements TrackerRepository {
   @Override
   public void update(final long id, final Tracker tracker) {
     if (getById(id).isEmpty()) {
-      String message = "Cannot update tracker, because tracker with id " + id + " does not exist";
+      final String message = "Cannot update tracker, because tracker with id " + id + " does not exist";
       log.error(message);
       throw new RepositoryNotFoundException(message);
     }
 
-    trackerStorage.update(tracker, id);
+    trackerStorage.update(id, tracker);
   }
 
   @Override

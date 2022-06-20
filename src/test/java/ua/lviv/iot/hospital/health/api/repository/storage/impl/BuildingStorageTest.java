@@ -136,7 +136,7 @@ public class BuildingStorageTest extends BaseStorageTest {
     // when
     final var updated = buildBuilding(1);
     updated.setName("Updated name");
-    buildingStorage.update(updated, 1);
+    buildingStorage.update(1, updated);
 
     // then
     final var actualOptional = buildingStorage.getById(1);
@@ -157,7 +157,7 @@ public class BuildingStorageTest extends BaseStorageTest {
     // when
     final var updated = buildBuilding(1);
     updated.setName("Updated name");
-    buildingStorage.update(updated, 1);
+    buildingStorage.update(1, updated);
     buildingStorage.writeToFile();
 
     // then

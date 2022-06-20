@@ -136,7 +136,7 @@ public class HospitalStorageTest extends BaseStorageTest {
     // when
     final var updated = buildHospital(1);
     updated.setName("Updated name");
-    hospitalStorage.update(updated, 1);
+    hospitalStorage.update(1, updated);
 
     // then
     final var actualOptional = hospitalStorage.getById(1);
@@ -157,7 +157,7 @@ public class HospitalStorageTest extends BaseStorageTest {
     // when
     final var updated = buildHospital(1);
     updated.setName("Updated name");
-    hospitalStorage.update(updated, 1);
+    hospitalStorage.update(1, updated);
     hospitalStorage.writeToFile();
 
     // then

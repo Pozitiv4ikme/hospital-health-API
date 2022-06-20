@@ -136,7 +136,7 @@ public class TrackerStorageTest extends BaseStorageTest {
     // when
     final var updated = buildTracker(1);
     updated.setModel(origin.getModel() + " Latest");
-    trackerStorage.update(updated, 1);
+    trackerStorage.update(1, updated);
 
     // then
     final var actualOptional = trackerStorage.getById(1);
@@ -157,7 +157,7 @@ public class TrackerStorageTest extends BaseStorageTest {
     // when
     final var updated = buildTracker(1);
     updated.setModel(origin.getModel() + " NEW");
-    trackerStorage.update(updated, 1);
+    trackerStorage.update(1, updated);
     trackerStorage.writeToFile();
 
     // then

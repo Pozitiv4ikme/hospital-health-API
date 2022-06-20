@@ -54,7 +54,7 @@ public final class BuildingStorage extends AbstractStorage implements MutableSto
   }
 
   @Override
-  public void update(final Building building, long id) {
+  public void update(final long id, final Building building) {
     building.setUpdatedDate(updateDate);
     BUILDINGS.replace(id, building);
   }
@@ -84,6 +84,7 @@ public final class BuildingStorage extends AbstractStorage implements MutableSto
     updateDate = LocalDate.now();
   }
 
+  @Override
   @PreDestroy
   protected void writeToFile() {
     writeBuildings(getAllByDate(updateDate), updateDate);
@@ -91,14 +92,14 @@ public final class BuildingStorage extends AbstractStorage implements MutableSto
   }
 
   void writeBuildings(final List<Building> buildings, final LocalDate updateDate) {
-    var buildingFilePath = String.format(buildingFilePattern, updateDate.format(FORMATTER));
-    var filePath = Paths.get(folderName + "/" + buildingFilePath);
+    final var buildingFilePath = String.format(buildingFilePattern, updateDate.format(FORMATTER));
+    final var filePath = Paths.get(folderName + "/" + buildingFilePath);
 
     if (Files.notExists(filePath)) {
       try {
         Files.createFile(filePath);
-      } catch (IOException e) {
-        String message = "Unable to create file" + filePath;
+      } catch (final IOException e) {
+        final String message = "Unable to create file" + filePath;
         log.error(message);
         throw new BuildingStorageException(message);
       }
@@ -107,11 +108,11 @@ public final class BuildingStorage extends AbstractStorage implements MutableSto
   }
 
   List<Building> readBuildingsFromFiles() {
-    var folder = new File(folderName);
+    final var folder = new File(folderName);
     if (!folder.exists() && !folder.mkdir()) {
       return List.of();
     }
-    var files = folder.listFiles((d, name) -> isBuildingFileForRead(name));
+    final var files = folder.listFiles((d, name) -> isBuildingFileForRead(name));
     if (null != files) {
       return Arrays.stream(files).flatMap(file -> readBuildingsFromFile(file).stream()).toList();
     }
@@ -119,9 +120,9 @@ public final class BuildingStorage extends AbstractStorage implements MutableSto
   }
 
   private void writeBuildingsToFile(final File file, final List<Building> buildings) {
-    try (var writer = Files.newBufferedWriter(file.toPath())) {
+    try (final var writer = Files.newBufferedWriter(file.toPath())) {
       writer.write(Building.HEADERS + "\n");
-      StatefulBeanToCsv<Building> csvWriter = new StatefulBeanToCsvBuilder<Building>(writer)
+      final StatefulBeanToCsv<Building> csvWriter = new StatefulBeanToCsvBuilder<Building>(writer)
           .withOrderedResults(true)
           .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
           .withQuotechar(CSVWriter.DEFAULT_QUOTE_CHARACTER)
@@ -130,8 +131,8 @@ public final class BuildingStorage extends AbstractStorage implements MutableSto
 
       csvWriter.write(buildings);
 
-    } catch (IOException | CsvRequiredFieldEmptyException | CsvDataTypeMismatchException ex) {
-      var message = "Unable to write file " + file.getPath();
+    } catch (final IOException | CsvRequiredFieldEmptyException | CsvDataTypeMismatchException ex) {
+      final var message = "Unable to write file " + file.getPath();
       log.error(message);
       throw new BuildingStorageException(message);
     }
@@ -148,8 +149,8 @@ public final class BuildingStorage extends AbstractStorage implements MutableSto
           .withType(Building.class)
           .withSkipLines(1)
           .build().parse();
-    } catch (IOException e) {
-      var message = "Unable to parse .csv file " + file.toPath();
+    } catch (final IOException e) {
+      final var message = "Unable to parse .csv file " + file.toPath();
       log.error(message);
       throw new BuildingStorageException(message);
     }

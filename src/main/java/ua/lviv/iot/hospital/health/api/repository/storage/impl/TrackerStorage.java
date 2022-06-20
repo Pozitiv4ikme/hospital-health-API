@@ -54,13 +54,13 @@ public class TrackerStorage extends AbstractStorage implements MutableStorage<Tr
   }
 
   @Override
-  public void update(final Tracker tracker, final long id) {
+  public void update(final long id, final Tracker tracker) {
     tracker.setUpdatedDate(updateDate);
     TRACKERS.replace(id, tracker);
   }
 
   @Override
-  public void deleteById(long id) {
+  public void deleteById(final long id) {
     TRACKERS.remove(id);
   }
 
@@ -84,6 +84,7 @@ public class TrackerStorage extends AbstractStorage implements MutableStorage<Tr
     updateDate = LocalDate.now();
   }
 
+  @Override
   @PreDestroy
   protected void writeToFile() {
     writeTrackers(getAllByDate(updateDate), updateDate);
@@ -91,14 +92,14 @@ public class TrackerStorage extends AbstractStorage implements MutableStorage<Tr
   }
 
   void writeTrackers(final List<Tracker> trackers, final LocalDate updateDate) {
-    var trackerFilePath = String.format(trackerFilePattern, updateDate.format(FORMATTER));
-    var filePath = Paths.get(folderName + "/" + trackerFilePath);
+    final var trackerFilePath = String.format(trackerFilePattern, updateDate.format(FORMATTER));
+    final var filePath = Paths.get(folderName + "/" + trackerFilePath);
 
     if (Files.notExists(filePath)) {
       try {
         Files.createFile(filePath);
-      } catch (IOException e) {
-        String message = "Unable to create file" + filePath;
+      } catch (final IOException e) {
+        final String message = "Unable to create file" + filePath;
         log.error(message);
         throw new TrackerStorageException(message);
       }
@@ -107,11 +108,11 @@ public class TrackerStorage extends AbstractStorage implements MutableStorage<Tr
   }
 
   List<Tracker> readTrackersFromFiles() {
-    var folder = new File(folderName);
+    final var folder = new File(folderName);
     if (!folder.exists() && !folder.mkdir()) {
       return List.of();
     }
-    var files = folder.listFiles((d, name) -> isTrackerFileForRead(name));
+    final var files = folder.listFiles((d, name) -> isTrackerFileForRead(name));
     if (null != files) {
       return Arrays.stream(files).flatMap(file -> readTrackersFromFile(file).stream()).toList();
     }
@@ -119,9 +120,9 @@ public class TrackerStorage extends AbstractStorage implements MutableStorage<Tr
   }
 
   private void writeTrackersToFile(final File file, final List<Tracker> trackers) {
-    try (var writer = Files.newBufferedWriter(file.toPath())) {
+    try (final var writer = Files.newBufferedWriter(file.toPath())) {
       writer.write(Tracker.HEADERS + "\n");
-      StatefulBeanToCsv<Tracker> csvWriter = new StatefulBeanToCsvBuilder<Tracker>(writer)
+      final StatefulBeanToCsv<Tracker> csvWriter = new StatefulBeanToCsvBuilder<Tracker>(writer)
           .withOrderedResults(true)
           .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
           .withQuotechar(CSVWriter.DEFAULT_QUOTE_CHARACTER)
@@ -130,8 +131,8 @@ public class TrackerStorage extends AbstractStorage implements MutableStorage<Tr
 
       csvWriter.write(trackers);
 
-    } catch (IOException | CsvRequiredFieldEmptyException | CsvDataTypeMismatchException ex) {
-      var message = "Unable to write file " + file.getPath();
+    } catch (final IOException | CsvRequiredFieldEmptyException | CsvDataTypeMismatchException ex) {
+      final var message = "Unable to write file " + file.getPath();
       log.error(message);
       throw new TrackerStorageException(message);
     }
@@ -148,8 +149,8 @@ public class TrackerStorage extends AbstractStorage implements MutableStorage<Tr
           .withType(Tracker.class)
           .withSkipLines(1)
           .build().parse();
-    } catch (IOException e) {
-      var message = "Unable to parse .csv file " + file.toPath();
+    } catch (final IOException e) {
+      final var message = "Unable to parse .csv file " + file.toPath();
       log.error(message);
       throw new TrackerStorageException(message);
     }

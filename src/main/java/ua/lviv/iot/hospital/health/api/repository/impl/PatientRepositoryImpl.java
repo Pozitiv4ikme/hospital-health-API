@@ -23,7 +23,7 @@ public final class PatientRepositoryImpl implements PatientRepository {
   @Override
   public void create(final Patient patient) {
     if (getById(patient.getId()).isPresent()) {
-      String message = "Cannot create patient, because patient with id " + patient.getId() + " already exists";
+      final String message = "Cannot create patient, because patient with id " + patient.getId() + " already exists";
       log.error(message);
       throw new PatientRepositoryException(message);
     }
@@ -35,13 +35,13 @@ public final class PatientRepositoryImpl implements PatientRepository {
   @Override
   public void update(final long id, final Patient patient) {
     if (getById(id).isEmpty()) {
-      String message = "Cannot update patient, because patient with id " + id + " does not exist";
+      final String message = "Cannot update patient, because patient with id " + id + " does not exist";
       log.error(message);
       throw new RepositoryNotFoundException(message);
     }
 
     doesRoomExist(patient);
-    patientStorage.update(patient, id);
+    patientStorage.update(id, patient);
   }
 
   @Override
@@ -61,7 +61,7 @@ public final class PatientRepositoryImpl implements PatientRepository {
 
   private void doesRoomExist(final Patient patient) {
     if (roomRepository.getById(patient.getRoomId()).isEmpty()) {
-      String message = "Room with id " + patient.getRoomId() + " does not exist";
+      final String message = "Room with id " + patient.getRoomId() + " does not exist";
       log.error(message);
       throw new RepositoryNotFoundException(message);
     }

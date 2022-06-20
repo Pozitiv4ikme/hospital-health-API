@@ -7,7 +7,7 @@ public interface MutableStorage<T> {
 
   void create(T entity);
 
-  void update(T entity, long id);
+  void update(long id, T entity);
 
   void deleteById(long id);
 

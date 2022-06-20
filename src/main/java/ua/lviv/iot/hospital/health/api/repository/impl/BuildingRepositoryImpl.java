@@ -23,7 +23,7 @@ public final class BuildingRepositoryImpl implements BuildingRepository {
   @Override
   public void create(final Building building) {
     if (getById(building.getId()).isPresent()) {
-      String message = "Cannot create building, because building with id " + building.getId() + " already exists";
+      final String message = "Cannot create building, because building with id " + building.getId() + " already exists";
       log.error(message);
       throw new BuildingRepositoryException(message);
     }
@@ -35,13 +35,13 @@ public final class BuildingRepositoryImpl implements BuildingRepository {
   @Override
   public void update(final long id, final Building building) {
     if (getById(id).isEmpty()) {
-      String message = "Cannot update building, because building with id " + id + " does not exist";
+      final String message = "Cannot update building, because building with id " + id + " does not exist";
       log.error(message);
       throw new RepositoryNotFoundException(message);
     }
 
     doesHospitalExist(building);
-    buildingStorage.update(building, id);
+    buildingStorage.update(id, building);
   }
 
   @Override
@@ -61,7 +61,7 @@ public final class BuildingRepositoryImpl implements BuildingRepository {
 
   private void doesHospitalExist(final Building building) {
     if (hospitalRepository.getById(building.getHospitalId()).isEmpty()) {
-      String message = "Hospital with id " + building.getHospitalId() + " does not exist";
+      final String message = "Hospital with id " + building.getHospitalId() + " does not exist";
       log.error(message);
       throw new RepositoryNotFoundException(message);
     }

@@ -54,7 +54,7 @@ public final class RoomStorage extends AbstractStorage implements MutableStorage
   }
 
   @Override
-  public void update(final Room room, final long id) {
+  public void update(final long id, final Room room) {
     room.setUpdatedDate(updateDate);
     ROOMS.replace(id, room);
   }
@@ -84,6 +84,7 @@ public final class RoomStorage extends AbstractStorage implements MutableStorage
     updateDate = LocalDate.now();
   }
 
+  @Override
   @PreDestroy
   protected void writeToFile() {
     writeRooms(getAllByDate(updateDate), updateDate);
@@ -91,14 +92,14 @@ public final class RoomStorage extends AbstractStorage implements MutableStorage
   }
 
   void writeRooms(final List<Room> rooms, final LocalDate updateDate) {
-    var roomFilePath = String.format(roomFilePattern, updateDate.format(FORMATTER));
-    var filePath = Paths.get(folderName + "/" + roomFilePath);
+    final var roomFilePath = String.format(roomFilePattern, updateDate.format(FORMATTER));
+    final var filePath = Paths.get(folderName + "/" + roomFilePath);
 
     if (Files.notExists(filePath)) {
       try {
         Files.createFile(filePath);
-      } catch (IOException e) {
-        String message = "Unable to create file" + filePath;
+      } catch (final IOException e) {
+        final String message = "Unable to create file" + filePath;
         log.error(message);
         throw new RoomStorageException(message);
       }
@@ -107,11 +108,11 @@ public final class RoomStorage extends AbstractStorage implements MutableStorage
   }
 
   List<Room> readRoomsFromFiles() {
-    var folder = new File(folderName);
+    final var folder = new File(folderName);
     if (!folder.exists() && !folder.mkdir()) {
       return List.of();
     }
-    var files = folder.listFiles((d, name) -> isRoomFileForRead(name));
+    final var files = folder.listFiles((d, name) -> isRoomFileForRead(name));
     if (null != files) {
       return Arrays.stream(files).flatMap(file -> readRoomsFromFile(file).stream()).toList();
     }
@@ -119,9 +120,9 @@ public final class RoomStorage extends AbstractStorage implements MutableStorage
   }
 
   private void writeRoomsToFile(final File file, final List<Room> rooms) {
-    try (var writer = Files.newBufferedWriter(file.toPath())) {
+    try (final var writer = Files.newBufferedWriter(file.toPath())) {
       writer.write(Room.HEADERS + "\n");
-      StatefulBeanToCsv<Room> csvWriter = new StatefulBeanToCsvBuilder<Room>(writer)
+      final StatefulBeanToCsv<Room> csvWriter = new StatefulBeanToCsvBuilder<Room>(writer)
           .withOrderedResults(true)
           .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
           .withQuotechar(CSVWriter.DEFAULT_QUOTE_CHARACTER)
@@ -130,8 +131,8 @@ public final class RoomStorage extends AbstractStorage implements MutableStorage
 
       csvWriter.write(rooms);
 
-    } catch (IOException | CsvRequiredFieldEmptyException | CsvDataTypeMismatchException ex) {
-      var message = "Unable to write file " + file.getPath();
+    } catch (final IOException | CsvRequiredFieldEmptyException | CsvDataTypeMismatchException ex) {
+      final var message = "Unable to write file " + file.getPath();
       log.error(message);
       throw new RoomStorageException(message);
     }
@@ -148,8 +149,8 @@ public final class RoomStorage extends AbstractStorage implements MutableStorage
           .withType(Room.class)
           .withSkipLines(1)
           .build().parse();
-    } catch (IOException e) {
-      var message = "Unable to parse .csv file " + file.toPath();
+    } catch (final IOException e) {
+      final var message = "Unable to parse .csv file " + file.toPath();
       log.error(message);
       throw new RoomStorageException(message);
     }

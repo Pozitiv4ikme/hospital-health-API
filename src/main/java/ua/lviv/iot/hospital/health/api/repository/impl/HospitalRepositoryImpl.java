@@ -21,7 +21,7 @@ public final class HospitalRepositoryImpl implements HospitalRepository {
   @Override
   public void create(final Hospital hospital) {
     if (getById(hospital.getId()).isPresent()) {
-      String message = "Cannot create hospital, because hospital with id " + hospital.getId() + " already exists";
+      final String message = "Cannot create hospital, because hospital with id " + hospital.getId() + " already exists";
       log.error(message);
       throw new HospitalRepositoryException(message);
     }
@@ -32,12 +32,12 @@ public final class HospitalRepositoryImpl implements HospitalRepository {
   @Override
   public void update(final long id, final Hospital hospital) {
     if (getById(id).isEmpty()) {
-      String message = "Cannot update hospital, because hospital with id " + id + " does not exist";
+      final String message = "Cannot update hospital, because hospital with id " + id + " does not exist";
       log.error(message);
       throw new RepositoryNotFoundException(message);
     }
 
-    hospitalStorage.update(hospital, id);
+    hospitalStorage.update(id, hospital);
   }
 
   @Override

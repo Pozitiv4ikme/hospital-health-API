@@ -136,7 +136,7 @@ public class RoomStorageTest extends BaseStorageTest {
     // when
     final var updated = buildRoom(1);
     updated.setNumber(origin.getNumber() + 10);
-    roomStorage.update(updated, 1);
+    roomStorage.update(1, updated);
 
     // then
     final var actualOptional = roomStorage.getById(1);
@@ -157,7 +157,7 @@ public class RoomStorageTest extends BaseStorageTest {
     // when
     final var updated = buildRoom(1);
     updated.setNumber(origin.getNumber() + 20);
-    roomStorage.update(updated, 1);
+    roomStorage.update(1, updated);
     roomStorage.writeToFile();
 
     // then

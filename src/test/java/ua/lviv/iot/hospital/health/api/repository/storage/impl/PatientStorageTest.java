@@ -136,7 +136,7 @@ public class PatientStorageTest extends BaseStorageTest {
     // when
     final var updated = buildPatient(1);
     updated.setName(origin.getName() + " New");
-    patientStorage.update(updated, 1);
+    patientStorage.update(1, updated);
 
     // then
     final var actualOptional = patientStorage.getById(1);
@@ -157,7 +157,7 @@ public class PatientStorageTest extends BaseStorageTest {
     // when
     final var updated = buildPatient(1);
     updated.setSurname(origin.getSurname() + " NEW");
-    patientStorage.update(updated, 1);
+    patientStorage.update(1, updated);
     patientStorage.writeToFile();
 
     // then

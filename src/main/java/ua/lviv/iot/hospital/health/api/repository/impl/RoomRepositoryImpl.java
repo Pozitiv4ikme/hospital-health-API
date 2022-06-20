@@ -23,7 +23,7 @@ public final class RoomRepositoryImpl implements RoomRepository {
   @Override
   public void create(final Room room) {
     if (getById(room.getId()).isPresent()) {
-      String message = "Cannot create room, because room with id " + room.getId() + " already exists";
+      final String message = "Cannot create room, because room with id " + room.getId() + " already exists";
       log.error(message);
       throw new RoomRepositoryException(message);
     }
@@ -35,13 +35,13 @@ public final class RoomRepositoryImpl implements RoomRepository {
   @Override
   public void update(final long id, final Room room) {
     if (getById(id).isEmpty()) {
-      String message = "Cannot update room, because room with id " + id + " does not exist";
+      final String message = "Cannot update room, because room with id " + id + " does not exist";
       log.error(message);
       throw new RepositoryNotFoundException(message);
     }
 
     doesBuildingExist(room);
-    roomStorage.update(room, id);
+    roomStorage.update(id, room);
   }
 
   @Override
@@ -61,7 +61,7 @@ public final class RoomRepositoryImpl implements RoomRepository {
 
   private void doesBuildingExist(final Room room) {
     if (buildingRepository.getById(room.getBuildingId()).isEmpty()) {
-      String message = "Building with id " + room.getBuildingId() + " does not exist";
+      final String message = "Building with id " + room.getBuildingId() + " does not exist";
       log.error(message);
       throw new RepositoryNotFoundException(message);
     }

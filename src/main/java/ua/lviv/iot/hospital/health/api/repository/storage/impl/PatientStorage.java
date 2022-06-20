@@ -54,7 +54,7 @@ public final class PatientStorage extends AbstractStorage implements MutableStor
   }
 
   @Override
-  public void update(final Patient patient, final long id) {
+  public void update(final long id, final Patient patient) {
     PATIENTS.replace(id, patient);
   }
 
@@ -83,6 +83,7 @@ public final class PatientStorage extends AbstractStorage implements MutableStor
     updateDate = LocalDate.now();
   }
 
+  @Override
   @PreDestroy
   protected void writeToFile() {
     writePatients(getAllByDate(updateDate), updateDate);
@@ -90,14 +91,14 @@ public final class PatientStorage extends AbstractStorage implements MutableStor
   }
 
   void writePatients(final List<Patient> patients, final LocalDate updateDate) {
-    var patientDataFilePath = String.format(patientFilePattern, updateDate.format(FORMATTER));
-    var filePath = Paths.get(folderName + "/" + patientDataFilePath);
+    final var patientDataFilePath = String.format(patientFilePattern, updateDate.format(FORMATTER));
+    final var filePath = Paths.get(folderName + "/" + patientDataFilePath);
 
     if (Files.notExists(filePath)) {
       try {
         Files.createFile(filePath);
-      } catch (IOException e) {
-        String message = "Unable to create file" + filePath;
+      } catch (final IOException e) {
+        final String message = "Unable to create file" + filePath;
         log.error(message);
         throw new PatientStorageException(message);
       }
@@ -106,11 +107,11 @@ public final class PatientStorage extends AbstractStorage implements MutableStor
   }
 
   List<Patient> readPatientsFromFiles() {
-    var folder = new File(folderName);
+    final var folder = new File(folderName);
     if (!folder.exists() && !folder.mkdir()) {
       return List.of();
     }
-    var files = folder.listFiles((d, name) -> isPatientFileForRead(name));
+    final var files = folder.listFiles((d, name) -> isPatientFileForRead(name));
     if (null != files) {
       return Arrays.stream(files).flatMap(file -> readPatientsFromFile(file).stream()).toList();
     }
@@ -118,9 +119,9 @@ public final class PatientStorage extends AbstractStorage implements MutableStor
   }
 
   private void writePatientsToFile(final File file, final List<Patient> patients) {
-    try (var writer = Files.newBufferedWriter(file.toPath())) {
+    try (final var writer = Files.newBufferedWriter(file.toPath())) {
       writer.write(Patient.HEADERS + "\n");
-      StatefulBeanToCsv<Patient> csvWriter = new StatefulBeanToCsvBuilder<Patient>(writer)
+      final StatefulBeanToCsv<Patient> csvWriter = new StatefulBeanToCsvBuilder<Patient>(writer)
           .withOrderedResults(true)
           .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
           .withQuotechar(CSVWriter.DEFAULT_QUOTE_CHARACTER)
@@ -129,8 +130,8 @@ public final class PatientStorage extends AbstractStorage implements MutableStor
 
       csvWriter.write(patients);
 
-    } catch (IOException | CsvRequiredFieldEmptyException | CsvDataTypeMismatchException ex) {
-      var message = "Unable to write file " + file.getPath();
+    } catch (final IOException | CsvRequiredFieldEmptyException | CsvDataTypeMismatchException ex) {
+      final var message = "Unable to write file " + file.getPath();
       log.error(message);
       throw new PatientStorageException(message);
     }
@@ -147,14 +148,14 @@ public final class PatientStorage extends AbstractStorage implements MutableStor
           .withType(Patient.class)
           .withSkipLines(1)
           .build().parse();
-    } catch (IOException e) {
-      var message = "Unable to parse .csv file " + file.toPath();
+    } catch (final IOException e) {
+      final var message = "Unable to parse .csv file " + file.toPath();
       log.error(message);
       throw new PatientStorageException(message);
     }
   }
 
-  private List<Patient> getAllByDate(LocalDate date) {
+  private List<Patient> getAllByDate(final LocalDate date) {
     return getAll().stream()
         .filter(patient -> date.equals(patient.getUpdatedDate()))
         .toList();
