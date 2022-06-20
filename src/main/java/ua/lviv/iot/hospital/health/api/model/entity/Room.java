@@ -1,20 +1,23 @@
 package ua.lviv.iot.hospital.health.api.model.entity;
 
 import com.opencsv.bean.CsvBindByPosition;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class Room {
-  public static final String HEADERS = "id,number,buildingId";
+@EqualsAndHashCode(callSuper = false)
+public class Room extends Dated {
 
-  @CsvBindByPosition(position = 0)
-  private long id;
+  public static final String HEADERS = "updatedDate,id,number,buildingId";
 
   @CsvBindByPosition(position = 1)
-  private int number;
+  private long id;
 
   @CsvBindByPosition(position = 2)
+  private int number;
+
+  @CsvBindByPosition(position = 3)
   private long buildingId;
 }

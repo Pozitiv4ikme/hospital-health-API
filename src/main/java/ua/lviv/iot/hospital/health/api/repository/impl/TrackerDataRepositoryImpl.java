@@ -3,8 +3,8 @@ package ua.lviv.iot.hospital.health.api.repository.impl;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import ua.lviv.iot.hospital.health.api.repository.TrackerDataRepository;
 import ua.lviv.iot.hospital.health.api.model.entity.TrackerData;
+import ua.lviv.iot.hospital.health.api.repository.TrackerDataRepository;
 import ua.lviv.iot.hospital.health.api.repository.storage.impl.TrackerDataStorage;
 
 @Repository
@@ -25,7 +25,7 @@ public class TrackerDataRepositoryImpl implements TrackerDataRepository {
 
   @Override
   public List<TrackerData> getDataById(long id) {
-    return trackerDataStorage.getDataById(id);
+    return trackerDataStorage.getDataByTrackerId(id);
   }
 
   @Override

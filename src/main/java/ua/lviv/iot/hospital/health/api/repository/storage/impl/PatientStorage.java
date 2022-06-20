@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ua.lviv.iot.hospital.health.api.exception.patient.PatientStorageException;
-import ua.lviv.iot.hospital.health.api.exception.room.RoomStorageException;
 import ua.lviv.iot.hospital.health.api.model.entity.Patient;
 import ua.lviv.iot.hospital.health.api.repository.storage.AbstractStorage;
 import ua.lviv.iot.hospital.health.api.repository.storage.MutableStorage;
@@ -33,8 +32,6 @@ import ua.lviv.iot.hospital.health.api.repository.storage.MutableStorage;
 @Component
 public class PatientStorage extends AbstractStorage implements MutableStorage<Patient> {
 
-  private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy_MM_dd");
-  private static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("yyyy_MM_");
   private static final Map<Long, Patient> PATIENTS = new HashMap<>();
 
   @Value("${storage.folder}")
@@ -78,19 +75,22 @@ public class PatientStorage extends AbstractStorage implements MutableStorage<Pa
   }
 
   @PostConstruct
-  void loadPatientsFromFile() {
+  void loadFromFiles() {
     PATIENTS.clear();
-    PATIENTS.putAll(readPatientsFromFiles().stream().collect(Collectors.toMap(Patient::getId, p -> p)));
+    PATIENTS.putAll(readPatientsFromFiles().stream()
+        .collect(Collectors.toMap(Patient::getId,
+            p -> p,
+            (p1, p2) -> p1.getUpdatedDate().isAfter(p2.getUpdatedDate()) ? p1 : p2)));
     updateDate = LocalDate.now();
   }
 
   @PreDestroy
   protected void writeToFile() {
-    writePatients(getAll());
+    writePatients(getAllByDate(updateDate), updateDate);
     PATIENTS.clear();
   }
 
-  public void writePatients(List<Patient> patients) {
+  void writePatients(List<Patient> patients, LocalDate updateDate) {
     var patientDataFilePath = String.format(patientFilePattern, updateDate.format(FORMATTER));
     var filePath = Paths.get(folderName + "/" + patientDataFilePath);
 
@@ -103,22 +103,22 @@ public class PatientStorage extends AbstractStorage implements MutableStorage<Pa
         throw new PatientStorageException(message);
       }
     }
-    writePatientToFile(filePath.toFile(), patients);
+    writePatientsToFile(filePath.toFile(), patients);
   }
 
-  public List<Patient> readPatientsFromFiles() {
+  List<Patient> readPatientsFromFiles() {
     var folder = new File(folderName);
-    if (!folder.exists()) {
-      folder.mkdir();
+    if (!folder.exists() && !folder.mkdir()) {
+      return List.of();
     }
     var files = folder.listFiles((d, name) -> isPatientFileForRead(name));
     if (null != files) {
-      return Arrays.stream(files).flatMap(file -> readPatientFromFile(file).stream()).toList();
+      return Arrays.stream(files).flatMap(file -> readPatientsFromFile(file).stream()).toList();
     }
     return List.of();
   }
 
-  private void writePatientToFile(File file, List<Patient> patients) {
+  private void writePatientsToFile(File file, List<Patient> patients) {
     try (var writer = Files.newBufferedWriter(file.toPath())) {
       writer.write(Patient.HEADERS + "\n");
       StatefulBeanToCsv<Patient> csvWriter = new StatefulBeanToCsvBuilder<Patient>(writer)
@@ -142,7 +142,7 @@ public class PatientStorage extends AbstractStorage implements MutableStorage<Pa
         && fileName.endsWith(fileEnd);
   }
 
-  private List<Patient> readPatientFromFile(File file) {
+  private List<Patient> readPatientsFromFile(File file) {
     try {
       return new CsvToBeanBuilder<Patient>(Files.newBufferedReader(file.toPath()))
           .withType(Patient.class)
@@ -153,5 +153,11 @@ public class PatientStorage extends AbstractStorage implements MutableStorage<Pa
       log.error(message);
       throw new PatientStorageException(message);
     }
+  }
+
+  private List<Patient> getAllByDate(LocalDate date) {
+    return getAll().stream()
+        .filter(patient -> date.equals(patient.getUpdatedDate()))
+        .toList();
   }
 }

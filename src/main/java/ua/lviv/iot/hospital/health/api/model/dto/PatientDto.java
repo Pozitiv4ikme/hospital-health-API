@@ -10,6 +10,7 @@ public record PatientDto(long id,
                          long roomId,
                          HealthStatus healthStatus,
                          List<TrackerDto> trackers) {
+
   @Builder
   public PatientDto {}
 

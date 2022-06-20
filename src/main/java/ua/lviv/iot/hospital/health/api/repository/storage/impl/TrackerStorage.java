@@ -32,8 +32,6 @@ import ua.lviv.iot.hospital.health.api.repository.storage.MutableStorage;
 @Slf4j
 public class TrackerStorage extends AbstractStorage implements MutableStorage<Tracker> {
 
-  private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy_MM_dd");
-  private static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("yyyy_MM_");
   private static final Map<Long, Tracker> TRACKERS = new HashMap<>();
 
   @Value("${storage.folder}")
@@ -58,6 +56,7 @@ public class TrackerStorage extends AbstractStorage implements MutableStorage<Tr
 
   @Override
   public void update(Tracker tracker, long id) {
+    tracker.setUpdatedDate(updateDate);
     TRACKERS.replace(id, tracker);
   }
 
@@ -79,17 +78,20 @@ public class TrackerStorage extends AbstractStorage implements MutableStorage<Tr
   @PostConstruct
   void loadFromFiles() {
     TRACKERS.clear();
-    TRACKERS.putAll(readTrackersFromFiles().stream().collect(Collectors.toMap(Tracker::getId, t -> t)));
+    TRACKERS.putAll(readTrackersFromFiles().stream()
+        .collect(Collectors.toMap(Tracker::getId,
+            t -> t,
+            (t1, t2) -> t1.getUpdatedDate().isAfter(t2.getUpdatedDate()) ? t1 : t2)));
     updateDate = LocalDate.now();
   }
 
   @PreDestroy
   protected void writeToFile() {
-    writeTrackers(getAll());
+    writeTrackers(getAllByDate(updateDate), updateDate);
     TRACKERS.clear();
   }
 
-  void writeTrackers(List<Tracker> trackers) {
+  void writeTrackers(List<Tracker> trackers, LocalDate updateDate) {
     var trackerFilePath = String.format(trackerFilePattern, updateDate.format(FORMATTER));
     var filePath = Paths.get(folderName + "/" + trackerFilePath);
 
@@ -105,14 +107,14 @@ public class TrackerStorage extends AbstractStorage implements MutableStorage<Tr
     writeTrackersToFile(filePath.toFile(), trackers);
   }
 
-  private List<Tracker> readTrackersFromFiles() {
+  List<Tracker> readTrackersFromFiles() {
     var folder = new File(folderName);
-    if (!folder.exists()) {
-      folder.mkdir();
+    if (!folder.exists() && !folder.mkdir()) {
+      return List.of();
     }
     var files = folder.listFiles((d, name) -> isTrackerFileForRead(name));
     if (null != files) {
-      return Arrays.stream(files).flatMap(file -> readTrackerFromFile(file).stream()).toList();
+      return Arrays.stream(files).flatMap(file -> readTrackersFromFile(file).stream()).toList();
     }
     return List.of();
   }
@@ -141,7 +143,7 @@ public class TrackerStorage extends AbstractStorage implements MutableStorage<Tr
         && fileName.endsWith(fileEnd);
   }
 
-  private List<Tracker> readTrackerFromFile(File file) {
+  private List<Tracker> readTrackersFromFile(File file) {
     try {
       return new CsvToBeanBuilder<Tracker>(Files.newBufferedReader(file.toPath()))
           .withType(Tracker.class)
@@ -152,6 +154,12 @@ public class TrackerStorage extends AbstractStorage implements MutableStorage<Tr
       log.error(message);
       throw new TrackerStorageException(message);
     }
+  }
+
+  private List<Tracker> getAllByDate(LocalDate date) {
+    return getAll().stream()
+        .filter(tracker -> date.equals(tracker.getUpdatedDate()))
+        .toList();
   }
 
 }

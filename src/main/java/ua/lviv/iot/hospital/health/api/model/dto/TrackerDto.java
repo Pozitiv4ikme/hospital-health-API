@@ -9,6 +9,7 @@ public record TrackerDto(long id,
                          String model,
                          HealthStatus healthStatus,
                          List<TrackerData> trackerData) {
+
   @Builder
   public TrackerDto {}
 

@@ -15,6 +15,7 @@ import ua.lviv.iot.hospital.health.api.repository.storage.impl.RoomStorage;
 @Repository
 @RequiredArgsConstructor
 public class RoomRepositoryImpl implements RoomRepository {
+
   private final RoomStorage roomStorage;
   private final BuildingRepository buildingRepository;
 

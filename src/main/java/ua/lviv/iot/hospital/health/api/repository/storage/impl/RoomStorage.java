@@ -32,8 +32,6 @@ import ua.lviv.iot.hospital.health.api.repository.storage.MutableStorage;
 @Slf4j
 public class RoomStorage extends AbstractStorage implements MutableStorage<Room> {
 
-  private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy_MM_dd");
-  private static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("yyyy_MM_");
   private static final Map<Long, Room> ROOMS = new HashMap<>();
 
   @Value("${storage.folder}")
@@ -46,7 +44,7 @@ public class RoomStorage extends AbstractStorage implements MutableStorage<Room>
   private String roomFileStart;
 
   @Value("${storage.file-end}")
-  private String roomFileEnd;
+  private String fileEnd;
 
   private LocalDate updateDate;
 
@@ -58,6 +56,7 @@ public class RoomStorage extends AbstractStorage implements MutableStorage<Room>
 
   @Override
   public void update(Room room, long id) {
+    room.setUpdatedDate(updateDate);
     ROOMS.replace(id, room);
   }
 
@@ -79,17 +78,20 @@ public class RoomStorage extends AbstractStorage implements MutableStorage<Room>
   @PostConstruct
   void loadFromFiles() {
     ROOMS.clear();
-    ROOMS.putAll(readRoomsFromFiles().stream().collect(Collectors.toMap(Room::getId, r -> r)));
+    ROOMS.putAll(readRoomsFromFiles().stream()
+        .collect(Collectors.toMap(Room::getId,
+            r -> r,
+            (r1, r2) -> r1.getUpdatedDate().isAfter(r2.getUpdatedDate()) ? r1 : r2)));
     updateDate = LocalDate.now();
   }
 
   @PreDestroy
   protected void writeToFile() {
-    writeRooms(getAll());
+    writeRooms(getAllByDate(updateDate), updateDate);
     ROOMS.clear();
   }
 
-  void writeRooms(List<Room> rooms) {
+  void writeRooms(List<Room> rooms, LocalDate updateDate) {
     var roomFilePath = String.format(roomFilePattern, updateDate.format(FORMATTER));
     var filePath = Paths.get(folderName + "/" + roomFilePath);
 
@@ -105,14 +107,14 @@ public class RoomStorage extends AbstractStorage implements MutableStorage<Room>
     writeRoomsToFile(filePath.toFile(), rooms);
   }
 
-  private List<Room> readRoomsFromFiles() {
+  List<Room> readRoomsFromFiles() {
     var folder = new File(folderName);
-    if (!folder.exists()) {
-      folder.mkdir();
+    if (!folder.exists() && !folder.mkdir()) {
+      return List.of();
     }
     var files = folder.listFiles((d, name) -> isRoomFileForRead(name));
     if (null != files) {
-      return Arrays.stream(files).flatMap(file -> readRoomFromFile(file).stream()).toList();
+      return Arrays.stream(files).flatMap(file -> readRoomsFromFile(file).stream()).toList();
     }
     return List.of();
   }
@@ -138,10 +140,10 @@ public class RoomStorage extends AbstractStorage implements MutableStorage<Room>
 
   private boolean isRoomFileForRead(String fileName) {
     return fileName.startsWith(roomFileStart + LocalDate.now().format(MONTH_FORMATTER))
-        && fileName.endsWith(roomFileEnd);
+        && fileName.endsWith(fileEnd);
   }
 
-  private List<Room> readRoomFromFile(File file) {
+  private List<Room> readRoomsFromFile(File file) {
     try {
       return new CsvToBeanBuilder<Room>(Files.newBufferedReader(file.toPath()))
           .withType(Room.class)
@@ -152,6 +154,12 @@ public class RoomStorage extends AbstractStorage implements MutableStorage<Room>
       log.error(message);
       throw new RoomStorageException(message);
     }
+  }
+
+  private List<Room> getAllByDate(LocalDate date) {
+    return getAll().stream()
+        .filter(room -> date.equals(room.getUpdatedDate()))
+        .toList();
   }
 
 }

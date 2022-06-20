@@ -14,6 +14,7 @@ import ua.lviv.iot.hospital.health.api.service.HospitalService;
 @Service
 @RequiredArgsConstructor
 public class HospitalServiceImpl implements HospitalService {
+
   private final HospitalRepository hospitalRepository;
   private final BuildingService buildingService;
 

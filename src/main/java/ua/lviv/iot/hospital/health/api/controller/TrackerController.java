@@ -20,6 +20,7 @@ import ua.lviv.iot.hospital.health.api.service.TrackerService;
 @RequestMapping("trackers")
 @RequiredArgsConstructor
 public class TrackerController {
+
   private final TrackerService trackerService;
 
   @PostMapping
@@ -48,7 +49,7 @@ public class TrackerController {
   }
 
   @GetMapping("{id}/data")
-  public List<TrackerData> getTrackerDataById(@PathVariable ("id") int id){
+  public List<TrackerData> getTrackerDataById(@PathVariable("id") int id) {
     return trackerService.getDataById(id);
   }
 

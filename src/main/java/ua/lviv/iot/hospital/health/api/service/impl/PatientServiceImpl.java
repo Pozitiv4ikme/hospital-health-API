@@ -15,6 +15,7 @@ import ua.lviv.iot.hospital.health.api.service.TrackerService;
 @Service
 @RequiredArgsConstructor
 public class PatientServiceImpl implements PatientService {
+
   private final PatientRepository patientRepository;
   private final TrackerService trackerService;
 

@@ -23,18 +23,17 @@ import javax.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import ua.lviv.iot.hospital.health.api.repository.storage.AbstractStorage;
-import ua.lviv.iot.hospital.health.api.repository.storage.MutableStorage;
 import ua.lviv.iot.hospital.health.api.exception.hospital.HospitalStorageException;
 import ua.lviv.iot.hospital.health.api.model.entity.Hospital;
+import ua.lviv.iot.hospital.health.api.repository.storage.AbstractStorage;
+import ua.lviv.iot.hospital.health.api.repository.storage.MutableStorage;
 
 @Slf4j
 @Component
 public class HospitalStorage extends AbstractStorage implements MutableStorage<Hospital> {
 
   public static final Map<Long, Hospital> HOSPITALS = new HashMap<>();
-  private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy_MM_dd");
-  private static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("yyyy_MM_");
+
   @Value("${storage.folder}")
   private String folderName;
 
@@ -45,7 +44,7 @@ public class HospitalStorage extends AbstractStorage implements MutableStorage<H
   private String hospitalFileStart;
 
   @Value("${storage.file-end}")
-  private String hospitalFileEnd;
+  private String fileEnd;
 
   private LocalDate updateDate;
 
@@ -57,6 +56,7 @@ public class HospitalStorage extends AbstractStorage implements MutableStorage<H
 
   @Override
   public void update(Hospital hospital, long id) {
+    hospital.setUpdatedDate(updateDate);
     HOSPITALS.replace(id, hospital);
   }
 
@@ -76,19 +76,22 @@ public class HospitalStorage extends AbstractStorage implements MutableStorage<H
   }
 
   @PostConstruct
-  void loadFromFile() {
-    HOSPITALS.clear();
-    HOSPITALS.putAll(readHospitalsFromFiles().stream().collect(Collectors.toMap(Hospital::getId, h -> h)));
+  void loadFromFiles() {
+    HOSPITALS.putAll(readHospitalsFromFiles()
+        .stream()
+        .collect(Collectors.toMap(Hospital::getId,
+            h -> h,
+            (h1, h2) -> h1.getUpdatedDate().isAfter(h2.getUpdatedDate()) ? h1 : h2)));
     updateDate = LocalDate.now();
   }
 
   @PreDestroy
   protected void writeToFile() {
-    writeHospitals(getAll());
+    writeHospitals(getAllByDate(updateDate), updateDate);
     HOSPITALS.clear();
   }
 
-  public void writeHospitals(List<Hospital> hospitals) {
+  void writeHospitals(List<Hospital> hospitals, LocalDate updateDate) {
     var hospitalFilePath = String.format(hospitalFilePattern, updateDate.format(FORMATTER));
     var filePath = Paths.get(folderName + "/" + hospitalFilePath);
 
@@ -104,19 +107,19 @@ public class HospitalStorage extends AbstractStorage implements MutableStorage<H
     writeHospitalsToFile(filePath.toFile(), hospitals);
   }
 
-  public List<Hospital> readHospitalsFromFiles() {
+  List<Hospital> readHospitalsFromFiles() {
     var folder = new File(folderName);
-    if (!folder.exists()) {
-      folder.mkdir();
+    if (!folder.exists() && !folder.mkdir()) {
+      return List.of();
     }
     var files = folder.listFiles((d, name) -> isHospitalFileForRead(name));
     if (null != files) {
-      return Arrays.stream(files).flatMap(file -> readHospitalFromFile(file).stream()).toList();
+      return Arrays.stream(files).flatMap(file -> readHospitalsFromFile(file).stream()).toList();
     }
     return List.of();
   }
 
-  public void writeHospitalsToFile(File file, List<Hospital> hospitals) {
+  private void writeHospitalsToFile(File file, List<Hospital> hospitals) {
     try (var writer = Files.newBufferedWriter(file.toPath())) {
       writer.write(Hospital.HEADERS + "\n");
       StatefulBeanToCsv<Hospital> csvWriter = new StatefulBeanToCsvBuilder<Hospital>(writer)
@@ -137,10 +140,10 @@ public class HospitalStorage extends AbstractStorage implements MutableStorage<H
 
   private boolean isHospitalFileForRead(String fileName) {
     return fileName.startsWith(hospitalFileStart + LocalDate.now().format(MONTH_FORMATTER))
-        && fileName.endsWith(hospitalFileEnd);
+        && fileName.endsWith(fileEnd);
   }
 
-  private List<Hospital> readHospitalFromFile(File file) {
+  private List<Hospital> readHospitalsFromFile(File file) {
     try {
       return new CsvToBeanBuilder<Hospital>(Files.newBufferedReader(file.toPath()))
           .withType(Hospital.class)
@@ -151,5 +154,11 @@ public class HospitalStorage extends AbstractStorage implements MutableStorage<H
       log.error(message);
       throw new HospitalStorageException(message);
     }
+  }
+
+  private List<Hospital> getAllByDate(LocalDate date) {
+    return getAll().stream()
+        .filter(hospital -> date.equals(hospital.getUpdatedDate()))
+        .toList();
   }
 }

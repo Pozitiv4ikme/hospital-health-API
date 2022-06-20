@@ -22,7 +22,6 @@ import ua.lviv.iot.hospital.health.api.model.entity.Hospital;
 import ua.lviv.iot.hospital.health.api.service.BuildingService;
 import ua.lviv.iot.hospital.health.api.service.HospitalService;
 import ua.lviv.iot.hospital.health.api.service.PatientService;
-import ua.lviv.iot.hospital.health.api.service.RoomService;
 
 @RestController
 @RequestMapping("hospitals")

@@ -20,6 +20,7 @@ import ua.lviv.iot.hospital.health.api.service.RoomService;
 @RequestMapping("rooms")
 @RequiredArgsConstructor
 public class RoomController {
+
   private final RoomService roomService;
   private final PatientService patientService;
 

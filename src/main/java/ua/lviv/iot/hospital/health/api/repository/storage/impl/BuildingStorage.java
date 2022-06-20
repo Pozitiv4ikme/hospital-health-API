@@ -32,8 +32,6 @@ import ua.lviv.iot.hospital.health.api.repository.storage.MutableStorage;
 @Slf4j
 public class BuildingStorage extends AbstractStorage implements MutableStorage<Building> {
 
-  private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy_MM_dd");
-  private static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("yyyy_MM_");
   private static final Map<Long, Building> BUILDINGS = new HashMap<>();
 
   @Value("${storage.folder}")
@@ -46,7 +44,7 @@ public class BuildingStorage extends AbstractStorage implements MutableStorage<B
   private String buildingFileStart;
 
   @Value("${storage.file-end}")
-  private String buildingFileEnd;
+  private String fileEnd;
 
   private LocalDate updateDate;
 
@@ -58,6 +56,7 @@ public class BuildingStorage extends AbstractStorage implements MutableStorage<B
 
   @Override
   public void update(Building building, long id) {
+    building.setUpdatedDate(updateDate);
     BUILDINGS.replace(id, building);
   }
 
@@ -77,19 +76,22 @@ public class BuildingStorage extends AbstractStorage implements MutableStorage<B
   }
 
   @PostConstruct
-  void loadFromFile() {
+  void loadFromFiles() {
     BUILDINGS.clear();
-    BUILDINGS.putAll(readBuildingsFromFiles().stream().collect(Collectors.toMap(Building::getId, b -> b)));
+    BUILDINGS.putAll(readBuildingsFromFiles().stream()
+        .collect(Collectors.toMap(Building::getId,
+            b -> b,
+            (b1, b2) -> b1.getUpdatedDate().isAfter(b2.getUpdatedDate()) ? b1 : b2)));
     updateDate = LocalDate.now();
   }
 
   @PreDestroy
   protected void writeToFile() {
-    writeBuildings(getAll());
+    writeBuildings(getAllByDate(updateDate), updateDate);
     BUILDINGS.clear();
   }
 
-  public void writeBuildings(List<Building> buildings) {
+  void writeBuildings(List<Building> buildings, LocalDate updateDate) {
     var buildingFilePath = String.format(buildingFilePattern, updateDate.format(FORMATTER));
     var filePath = Paths.get(folderName + "/" + buildingFilePath);
 
@@ -105,14 +107,14 @@ public class BuildingStorage extends AbstractStorage implements MutableStorage<B
     writeBuildingsToFile(filePath.toFile(), buildings);
   }
 
-  public List<Building> readBuildingsFromFiles() {
+  List<Building> readBuildingsFromFiles() {
     var folder = new File(folderName);
-    if (!folder.exists()) {
-      folder.mkdir();
+    if (!folder.exists() && !folder.mkdir()) {
+      return List.of();
     }
     var files = folder.listFiles((d, name) -> isBuildingFileForRead(name));
     if (null != files) {
-      return Arrays.stream(files).flatMap(file -> readBuildingFromFile(file).stream()).toList();
+      return Arrays.stream(files).flatMap(file -> readBuildingsFromFile(file).stream()).toList();
     }
     return List.of();
   }
@@ -138,10 +140,10 @@ public class BuildingStorage extends AbstractStorage implements MutableStorage<B
 
   private boolean isBuildingFileForRead(String fileName) {
     return fileName.startsWith(buildingFileStart + LocalDate.now().format(MONTH_FORMATTER))
-        && fileName.endsWith(buildingFileEnd);
+        && fileName.endsWith(fileEnd);
   }
 
-  private List<Building> readBuildingFromFile(File file) {
+  private List<Building> readBuildingsFromFile(File file) {
     try {
       return new CsvToBeanBuilder<Building>(Files.newBufferedReader(file.toPath()))
           .withType(Building.class)
@@ -152,5 +154,11 @@ public class BuildingStorage extends AbstractStorage implements MutableStorage<B
       log.error(message);
       throw new BuildingStorageException(message);
     }
+  }
+
+  private List<Building> getAllByDate(LocalDate date) {
+    return getAll().stream()
+        .filter(building -> date.equals(building.getUpdatedDate()))
+        .toList();
   }
 }

@@ -17,6 +17,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,9 +28,9 @@ import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import ua.lviv.iot.hospital.health.api.repository.storage.ImmutableStorage;
 import ua.lviv.iot.hospital.health.api.exception.tracker.TrackerDataStorageException;
 import ua.lviv.iot.hospital.health.api.model.entity.TrackerData;
+import ua.lviv.iot.hospital.health.api.repository.storage.ImmutableStorage;
 
 @Slf4j
 @Component
@@ -49,12 +50,12 @@ public class TrackerDataStorage implements ImmutableStorage {
   private String trackerFileStart;
 
   @Value("${storage.file-end}")
-  private String trackerFileEnd;
+  private String fileEnd;
 
   public void saveData(long patientId, List<TrackerData> trackerDataList) {
     trackerDataList.forEach(trackerData -> trackerData.setPatientId(patientId));
     saveDataToMap(patientId, trackerDataList);
-    writeDataToFile(trackerDataList);
+    writeDataToFile(trackerDataList, LocalDate.now());
   }
 
   public List<TrackerData> getDataAll() {
@@ -68,19 +69,19 @@ public class TrackerDataStorage implements ImmutableStorage {
     return PATIENT_TRACKER_DATA.get(patientId);
   }
 
-  public List<TrackerData> getDataById(long id) {
+  public List<TrackerData> getDataByTrackerId(long id) {
     log.info("getting tracker data for id: " + id);
     return getDataAll().stream().filter(trackerData -> trackerData.getTrackerId() == id).toList();
   }
 
-  public void writeDataToFile(List<TrackerData> patientTrackerDataList) {
-    var trackerDataFilePath = String.format(trackerFilePattern, LocalDate.now().format(FORMATTER));
+  void writeDataToFile(List<TrackerData> patientTrackerDataList, LocalDate date) {
+    var trackerDataFilePath = String.format(trackerFilePattern, date.format(FORMATTER));
     var filePath = Paths.get(folderName + "/" + trackerDataFilePath);
 
     if (Files.notExists(filePath)) {
       try {
         Files.createFile(filePath);
-        writeHeader(filePath.toFile(), TrackerData.HEADERS);
+        writeHeader(filePath.toFile());
       } catch (IOException e) {
         String message = "Unable to create file" + trackerDataFilePath;
         log.error(message);
@@ -106,10 +107,10 @@ public class TrackerDataStorage implements ImmutableStorage {
     }
   }
 
-  public List<TrackerData> readDataFromFiles() {
+  List<TrackerData> readDataFromFiles() {
     var folder = new File(folderName);
-    if (!folder.exists()) {
-      folder.mkdir();
+    if (!folder.exists() && !folder.mkdir()) {
+        return List.of();
     }
     var files = folder.listFiles((d, name) -> isDataFileForRead(name));
     if (null != files) {
@@ -141,20 +142,20 @@ public class TrackerDataStorage implements ImmutableStorage {
 
   private boolean isDataFileForRead(String fileName) {
     return fileName.startsWith(trackerFileStart + LocalDate.now().format(MONTH_FORMATTER))
-        && fileName.endsWith(trackerFileEnd);
+        && fileName.endsWith(fileEnd);
   }
 
   private void saveDataToMap(long patientId, List<TrackerData> trackerDataList) {
     if (PATIENT_TRACKER_DATA.containsKey(patientId)) {
       PATIENT_TRACKER_DATA.get(patientId).addAll(trackerDataList);
     } else {
-      PATIENT_TRACKER_DATA.put(patientId, trackerDataList);
+      PATIENT_TRACKER_DATA.put(patientId, new ArrayList<>(trackerDataList));
     }
   }
 
-  private void writeHeader(File file, String headers) {
-    try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);) {
-      writer.write(headers + "\n");
+  private void writeHeader(File file) {
+    try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
+      writer.write(TrackerData.HEADERS + "\n");
     } catch (IOException e) {
       var message = "Unable to write header for" + file.getPath();
       log.error(message);

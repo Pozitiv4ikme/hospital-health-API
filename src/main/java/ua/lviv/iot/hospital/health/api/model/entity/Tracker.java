@@ -1,19 +1,20 @@
 package ua.lviv.iot.hospital.health.api.model.entity;
 
 import com.opencsv.bean.CsvBindByPosition;
-import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-@Builder
-public class Tracker {
-  public static final String HEADERS = "id,models";
+@EqualsAndHashCode(callSuper = false)
+public class Tracker extends Dated {
 
-  @CsvBindByPosition(position = 0)
-  private long id;
+  public static final String HEADERS = "updatedDate,id,model";
 
   @CsvBindByPosition(position = 1)
+  private long id;
+
+  @CsvBindByPosition(position = 2)
   private String model;
 }

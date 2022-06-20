@@ -2,10 +2,13 @@ package ua.lviv.iot.hospital.health.api.service.impl;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ua.lviv.iot.hospital.health.api.exception.tracker.TrackerServiceException;
 import ua.lviv.iot.hospital.health.api.model.HealthCategory;
 import ua.lviv.iot.hospital.health.api.model.HealthStatus;
 import ua.lviv.iot.hospital.health.api.model.dto.TrackerDto;
@@ -15,6 +18,7 @@ import ua.lviv.iot.hospital.health.api.repository.TrackerDataRepository;
 import ua.lviv.iot.hospital.health.api.repository.TrackerRepository;
 import ua.lviv.iot.hospital.health.api.service.TrackerService;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TrackerServiceImpl implements TrackerService {
@@ -74,6 +78,13 @@ public class TrackerServiceImpl implements TrackerService {
 
   @Override
   public void addData(long patientId, List<TrackerData> trackerDataList) {
+    trackerDataList.forEach(trackerData -> {
+      if (!Objects.equals(patientId, trackerData.getPatientId())) {
+        String message = "trackerData.patientId does not match patientId";
+        log.error(message);
+        throw new TrackerServiceException(message);
+      }
+    });
     trackerDataRepository.saveDataForPatientId(patientId, trackerDataList);
   }
 

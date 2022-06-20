@@ -15,11 +15,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ua.lviv.iot.hospital.health.api.model.HealthStatus;
 import ua.lviv.iot.hospital.health.api.model.dto.PatientDto;
-import ua.lviv.iot.hospital.health.api.model.entity.Building;
 import ua.lviv.iot.hospital.health.api.model.entity.Patient;
+import ua.lviv.iot.hospital.health.api.model.entity.TrackerData;
 import ua.lviv.iot.hospital.health.api.service.PatientService;
 import ua.lviv.iot.hospital.health.api.service.TrackerService;
-import ua.lviv.iot.hospital.health.api.model.entity.TrackerData;
 
 @RestController
 @RequestMapping("patients")

@@ -5,11 +5,8 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import ua.lviv.iot.hospital.health.api.exception.patient.PatientRepositoryException;
 import ua.lviv.iot.hospital.health.api.exception.tracker.TrackerRepositoryException;
-import ua.lviv.iot.hospital.health.api.model.dto.TrackerDto;
 import ua.lviv.iot.hospital.health.api.model.entity.Tracker;
-import ua.lviv.iot.hospital.health.api.repository.PatientRepository;
 import ua.lviv.iot.hospital.health.api.repository.TrackerRepository;
 import ua.lviv.iot.hospital.health.api.repository.storage.impl.TrackerStorage;
 
@@ -17,6 +14,7 @@ import ua.lviv.iot.hospital.health.api.repository.storage.impl.TrackerStorage;
 @Repository
 @RequiredArgsConstructor
 public class TrackerRepositoryImpl implements TrackerRepository {
+
   private final TrackerStorage trackerStorage;
 
   @Override
