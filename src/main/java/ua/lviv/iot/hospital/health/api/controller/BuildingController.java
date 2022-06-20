@@ -51,14 +51,14 @@ public class BuildingController {
 
 
   @GetMapping("{id}/rooms")
-  public List<RoomDto> getAllRoomsBuildingId(@PathVariable("id") long id) {
+  public List<RoomDto> getAllRoomsByBuildingId(@PathVariable("id") long id) {
     return getById(id).map(BuildingDto::rooms).orElse(List.of());
   }
 
   @GetMapping("{id}/rooms/{roomId}/patients")
-  public List<PatientDto> getAllRoomsBuildingId(@PathVariable("id") long id,
+  public List<PatientDto> getAllPatientsByBuildingIdAndRoomId(@PathVariable("id") long id,
       @PathVariable("roomId") long roomId) {
-    return getAllRoomsBuildingId(id).stream()
+    return getAllRoomsByBuildingId(id).stream()
         .filter(roomDto -> roomDto.id() == roomId)
         .flatMap(roomDto -> roomDto.patients().stream())
         .toList();
