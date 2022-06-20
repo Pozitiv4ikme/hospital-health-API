@@ -5,6 +5,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
+import ua.lviv.iot.hospital.health.api.exception.RepositoryNotFoundException;
 import ua.lviv.iot.hospital.health.api.exception.building.BuildingRepositoryException;
 import ua.lviv.iot.hospital.health.api.model.entity.Building;
 import ua.lviv.iot.hospital.health.api.repository.BuildingRepository;
@@ -36,7 +37,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
     if (getById(id).isEmpty()) {
       String message = "Cannot update building, because building with id " + id + " does not exist";
       log.error(message);
-      throw new BuildingRepositoryException(message);
+      throw new RepositoryNotFoundException(message);
     }
 
     doesHospitalExist(building);
@@ -62,7 +63,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
     if (hospitalRepository.getById(building.getHospitalId()).isEmpty()) {
       String message = "Hospital with id " + building.getHospitalId() + " does not exist";
       log.error(message);
-      throw new BuildingRepositoryException(message);
+      throw new RepositoryNotFoundException(message);
     }
   }
 }
