@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ua.lviv.iot.hospital.health.api.model.dto.PatientDto;
 import ua.lviv.iot.hospital.health.api.model.dto.RoomDto;
 import ua.lviv.iot.hospital.health.api.model.entity.Room;
 import ua.lviv.iot.hospital.health.api.service.PatientService;
@@ -50,7 +51,7 @@ public final class RoomController {
   }
 
   @GetMapping("{id}/patients")
-  public void getAllById(@PathVariable("id") final long roomId) {
-    patientService.getAllByRoomId(roomId);
+  public List<PatientDto> getAllPatientsById(@PathVariable("id") final long roomId) {
+    return patientService.getAllByRoomId(roomId);
   }
 }
