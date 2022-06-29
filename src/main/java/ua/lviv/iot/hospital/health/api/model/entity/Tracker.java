@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = false)
-public class Tracker extends Dated {
+public class Tracker extends Dated implements EntityId {
 
   public static final String HEADERS = "updatedDate,id,model";
 

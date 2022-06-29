@@ -21,7 +21,7 @@ public class RoomStorageTest extends BaseStorageTest {
   void testWriteToFileAndLoadFromFile() {
     // given
     final var expectedRooms = List.of(buildRoom(1), buildRoom(2), buildRoom(3));
-    roomStorage.writeRooms(expectedRooms, LocalDate.now());
+    roomStorage.writeEntities(expectedRooms, LocalDate.now());
     roomStorage.loadFromFiles();
 
     // when
@@ -37,17 +37,17 @@ public class RoomStorageTest extends BaseStorageTest {
     final var day1 = LocalDate.now().withDayOfMonth(1);
     final var roomsDay1 = List.of(buildRoom(1, day1),
         buildRoom(2, day1), buildRoom(3, day1));
-    roomStorage.writeRooms(roomsDay1, day1);
+    roomStorage.writeEntities(roomsDay1, day1);
 
     final var day2 = LocalDate.now().withDayOfMonth(2);
     final var roomsDay2 = List.of(buildRoom(4, day2),
         buildRoom(5, day2), buildRoom(6, day2));
-    roomStorage.writeRooms(roomsDay2, day2);
+    roomStorage.writeEntities(roomsDay2, day2);
 
     final var day3 = LocalDate.now().withDayOfMonth(3);
     final var roomsDay3 = List.of(buildRoom(7, day3),
         buildRoom(8, day3), buildRoom(9, day3));
-    roomStorage.writeRooms(roomsDay3, day3);
+    roomStorage.writeEntities(roomsDay3, day3);
 
     final var expectedRooms = Stream.of(roomsDay1, roomsDay2, roomsDay3)
         .flatMap(Collection::stream)
@@ -68,19 +68,19 @@ public class RoomStorageTest extends BaseStorageTest {
     final var day1 = LocalDate.now().withDayOfMonth(1);
     final var roomsDay1 = List.of(buildRoom(1, day1),
         buildRoom(2, day1), buildRoom(3, day1));
-    roomStorage.writeRooms(roomsDay1, day1);
+    roomStorage.writeEntities(roomsDay1, day1);
 
     // update room with id 2
     final var day2 = LocalDate.now().withDayOfMonth(2);
     final var roomsDay2 = List.of(buildRoom(4, day2),
         buildRoom(2, day2), buildRoom(5, day2));
-    roomStorage.writeRooms(roomsDay2, day2);
+    roomStorage.writeEntities(roomsDay2, day2);
 
     // update rooms with id 3 & 4
     final var day3 = LocalDate.now().withDayOfMonth(3);
     final var roomsDay3 = List.of(buildRoom(6, day3),
         buildRoom(3, day3), buildRoom(4, day3));
-    roomStorage.writeRooms(roomsDay3, day3);
+    roomStorage.writeEntities(roomsDay3, day3);
 
     // should load only the latest updated rooms
     final var expectedRooms = List.of(roomsDay1.get(0),
@@ -122,7 +122,7 @@ public class RoomStorageTest extends BaseStorageTest {
     roomStorage.writeToFile();
 
     // then
-    final var roomsFromFiles = roomStorage.readRoomsFromFiles();
+    final var roomsFromFiles = roomStorage.readEntitiesFromFiles();
     assertThat(roomsFromFiles).containsOnly(room);
   }
 
@@ -130,7 +130,7 @@ public class RoomStorageTest extends BaseStorageTest {
   void testUpdate() {
     // given
     final var origin = buildRoom(1);
-    roomStorage.writeRooms(List.of(origin), LocalDate.now());
+    roomStorage.writeEntities(List.of(origin), LocalDate.now());
     roomStorage.loadFromFiles();
 
     // when
@@ -151,7 +151,7 @@ public class RoomStorageTest extends BaseStorageTest {
   void testUpdateReadFromFile() {
     // given
     final var origin = buildRoom(1);
-    roomStorage.writeRooms(List.of(origin), LocalDate.now());
+    roomStorage.writeEntities(List.of(origin), LocalDate.now());
     roomStorage.loadFromFiles();
 
     // when
@@ -161,7 +161,7 @@ public class RoomStorageTest extends BaseStorageTest {
     roomStorage.writeToFile();
 
     // then
-    final var roomsFromFiles = roomStorage.readRoomsFromFiles();
+    final var roomsFromFiles = roomStorage.readEntitiesFromFiles();
     assertThat(roomsFromFiles).containsOnly(updated);
   }
 
@@ -169,7 +169,7 @@ public class RoomStorageTest extends BaseStorageTest {
   void testDelete() {
     // given
     final var origin = buildRoom(1);
-    roomStorage.writeRooms(List.of(origin), LocalDate.now());
+    roomStorage.writeEntities(List.of(origin), LocalDate.now());
     roomStorage.loadFromFiles();
 
     // when
@@ -184,7 +184,7 @@ public class RoomStorageTest extends BaseStorageTest {
   void testDeletedReadFromFile() {
     // given
     final var origin = buildRoom(1);
-    roomStorage.writeRooms(List.of(origin), LocalDate.now());
+    roomStorage.writeEntities(List.of(origin), LocalDate.now());
     roomStorage.loadFromFiles();
 
     // when
@@ -192,7 +192,7 @@ public class RoomStorageTest extends BaseStorageTest {
     roomStorage.writeToFile();
 
     // then
-    final var roomsFromFiles = roomStorage.readRoomsFromFiles();
+    final var roomsFromFiles = roomStorage.readEntitiesFromFiles();
     assertThat(roomsFromFiles).isEmpty();
   }
 
