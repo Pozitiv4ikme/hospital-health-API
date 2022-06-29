@@ -24,12 +24,6 @@ public abstract class ReadStorage<T> implements ImmutableStorage<T> {
   private String folderName;
 
   @Override
-  public abstract List<T> getAll();
-
-  @Override
-  public abstract void loadFromFiles();
-
-  @Override
   public boolean isEntityFileForRead(final String fileName) {
     return fileName.startsWith(getFileStart() + LocalDate.now().format(MONTH_FORMATTER))
         && fileName.endsWith(fileEnd);
