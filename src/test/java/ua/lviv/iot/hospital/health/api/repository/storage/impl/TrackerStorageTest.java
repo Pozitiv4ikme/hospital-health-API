@@ -21,7 +21,7 @@ public class TrackerStorageTest extends BaseStorageTest {
   void testWriteToFileAndLoadFromFile() {
     // given
     final var expectedTrackers = List.of(buildTracker(1), buildTracker(2), buildTracker(3));
-    trackerStorage.writeTrackers(expectedTrackers, LocalDate.now());
+    trackerStorage.writeEntities(expectedTrackers, LocalDate.now());
     trackerStorage.loadFromFiles();
 
     // when
@@ -37,17 +37,17 @@ public class TrackerStorageTest extends BaseStorageTest {
     final var day1 = LocalDate.now().withDayOfMonth(1);
     final var trackersDay1 = List.of(buildTracker(1, day1),
         buildTracker(2, day1), buildTracker(3, day1));
-    trackerStorage.writeTrackers(trackersDay1, day1);
+    trackerStorage.writeEntities(trackersDay1, day1);
 
     final var day2 = LocalDate.now().withDayOfMonth(2);
     final var trackersDay2 = List.of(buildTracker(4, day2),
         buildTracker(5, day2), buildTracker(6, day2));
-    trackerStorage.writeTrackers(trackersDay2, day2);
+    trackerStorage.writeEntities(trackersDay2, day2);
 
     final var day3 = LocalDate.now().withDayOfMonth(3);
     final var trackersDay3 = List.of(buildTracker(7, day3),
         buildTracker(8, day3), buildTracker(9, day3));
-    trackerStorage.writeTrackers(trackersDay3, day3);
+    trackerStorage.writeEntities(trackersDay3, day3);
 
     final var expectedTrackers = Stream.of(trackersDay1, trackersDay2, trackersDay3)
         .flatMap(Collection::stream)
@@ -68,19 +68,19 @@ public class TrackerStorageTest extends BaseStorageTest {
     final var day1 = LocalDate.now().withDayOfMonth(1);
     final var trackersDay1 = List.of(buildTracker(1, day1),
         buildTracker(2, day1), buildTracker(3, day1));
-    trackerStorage.writeTrackers(trackersDay1, day1);
+    trackerStorage.writeEntities(trackersDay1, day1);
 
     // update tracker with id 2
     final var day2 = LocalDate.now().withDayOfMonth(2);
     final var trackersDay2 = List.of(buildTracker(4, day2),
         buildTracker(2, day2), buildTracker(5, day2));
-    trackerStorage.writeTrackers(trackersDay2, day2);
+    trackerStorage.writeEntities(trackersDay2, day2);
 
     // update trackers with id 3 & 4
     final var day3 = LocalDate.now().withDayOfMonth(3);
     final var trackersDay3 = List.of(buildTracker(6, day3),
         buildTracker(3, day3), buildTracker(4, day3));
-    trackerStorage.writeTrackers(trackersDay3, day3);
+    trackerStorage.writeEntities(trackersDay3, day3);
 
     // should load only the latest updated trackers
     final var expectedTrackers = List.of(trackersDay1.get(0),
@@ -122,7 +122,7 @@ public class TrackerStorageTest extends BaseStorageTest {
     trackerStorage.writeToFile();
 
     // then
-    final var trackersFromFiles = trackerStorage.readTrackersFromFiles();
+    final var trackersFromFiles = trackerStorage.readEntitiesFromFiles();
     assertThat(trackersFromFiles).containsOnly(tracker);
   }
 
@@ -130,7 +130,7 @@ public class TrackerStorageTest extends BaseStorageTest {
   void testUpdate() {
     // given
     final var origin = buildTracker(1);
-    trackerStorage.writeTrackers(List.of(origin), LocalDate.now());
+    trackerStorage.writeEntities(List.of(origin), LocalDate.now());
     trackerStorage.loadFromFiles();
 
     // when
@@ -151,7 +151,7 @@ public class TrackerStorageTest extends BaseStorageTest {
   void testUpdateReadFromFile() {
     // given
     final var origin = buildTracker(1);
-    trackerStorage.writeTrackers(List.of(origin), LocalDate.now());
+    trackerStorage.writeEntities(List.of(origin), LocalDate.now());
     trackerStorage.loadFromFiles();
 
     // when
@@ -161,7 +161,7 @@ public class TrackerStorageTest extends BaseStorageTest {
     trackerStorage.writeToFile();
 
     // then
-    final var trackersFromFiles = trackerStorage.readTrackersFromFiles();
+    final var trackersFromFiles = trackerStorage.readEntitiesFromFiles();
     assertThat(trackersFromFiles).containsOnly(updated);
   }
 
@@ -169,7 +169,7 @@ public class TrackerStorageTest extends BaseStorageTest {
   void testDelete() {
     // given
     final var origin = buildTracker(1);
-    trackerStorage.writeTrackers(List.of(origin), LocalDate.now());
+    trackerStorage.writeEntities(List.of(origin), LocalDate.now());
     trackerStorage.loadFromFiles();
 
     // when
@@ -184,7 +184,7 @@ public class TrackerStorageTest extends BaseStorageTest {
   void testDeletedReadFromFile() {
     // given
     final var origin = buildTracker(1);
-    trackerStorage.writeTrackers(List.of(origin), LocalDate.now());
+    trackerStorage.writeEntities(List.of(origin), LocalDate.now());
     trackerStorage.loadFromFiles();
 
     // when
@@ -192,7 +192,7 @@ public class TrackerStorageTest extends BaseStorageTest {
     trackerStorage.writeToFile();
 
     // then
-    final var trackersFromFiles = trackerStorage.readTrackersFromFiles();
+    final var trackersFromFiles = trackerStorage.readEntitiesFromFiles();
     assertThat(trackersFromFiles).isEmpty();
   }
 

@@ -21,7 +21,7 @@ public class BuildingStorageTest extends BaseStorageTest {
   void testWriteToFileAndLoadFromFile() {
     // given
     final var expectedBuildings = List.of(buildBuilding(1), buildBuilding(2), buildBuilding(3));
-    buildingStorage.writeBuildings(expectedBuildings, LocalDate.now());
+    buildingStorage.writeEntities(expectedBuildings, LocalDate.now());
     buildingStorage.loadFromFiles();
 
     // when
@@ -37,17 +37,17 @@ public class BuildingStorageTest extends BaseStorageTest {
     final var day1 = LocalDate.now().withDayOfMonth(1);
     final var buildingsDay1 = List.of(buildBuilding(1, day1),
         buildBuilding(2, day1), buildBuilding(3, day1));
-    buildingStorage.writeBuildings(buildingsDay1, day1);
+    buildingStorage.writeEntities(buildingsDay1, day1);
 
     final var day2 = LocalDate.now().withDayOfMonth(2);
     final var buildingsDay2 = List.of(buildBuilding(4, day2),
         buildBuilding(5, day2), buildBuilding(6, day2));
-    buildingStorage.writeBuildings(buildingsDay2, day2);
+    buildingStorage.writeEntities(buildingsDay2, day2);
 
     final var day3 = LocalDate.now().withDayOfMonth(3);
     final var buildingsDay3 = List.of(buildBuilding(7, day3),
         buildBuilding(8, day3), buildBuilding(9, day3));
-    buildingStorage.writeBuildings(buildingsDay3, day3);
+    buildingStorage.writeEntities(buildingsDay3, day3);
 
     final var expectedBuildings = Stream.of(buildingsDay1, buildingsDay2, buildingsDay3)
         .flatMap(Collection::stream)
@@ -68,19 +68,19 @@ public class BuildingStorageTest extends BaseStorageTest {
     final var day1 = LocalDate.now().withDayOfMonth(1);
     final var buildingsDay1 = List.of(buildBuilding(1, day1),
         buildBuilding(2, day1), buildBuilding(3, day1));
-    buildingStorage.writeBuildings(buildingsDay1, day1);
+    buildingStorage.writeEntities(buildingsDay1, day1);
 
     // update building with id 2
     final var day2 = LocalDate.now().withDayOfMonth(2);
     final var buildingsDay2 = List.of(buildBuilding(4, day2),
         buildBuilding(2, day2), buildBuilding(5, day2));
-    buildingStorage.writeBuildings(buildingsDay2, day2);
+    buildingStorage.writeEntities(buildingsDay2, day2);
 
     // update buildings with id 3 & 4
     final var day3 = LocalDate.now().withDayOfMonth(3);
     final var buildingsDay3 = List.of(buildBuilding(6, day3),
         buildBuilding(3, day3), buildBuilding(4, day3));
-    buildingStorage.writeBuildings(buildingsDay3, day3);
+    buildingStorage.writeEntities(buildingsDay3, day3);
 
     // should load only the latest updated building
     final var expectedBuildings = List.of(buildingsDay1.get(0),
@@ -122,7 +122,7 @@ public class BuildingStorageTest extends BaseStorageTest {
     buildingStorage.writeToFile();
 
     // then
-    final var buildingsFromFiles = buildingStorage.readBuildingsFromFiles();
+    final var buildingsFromFiles = buildingStorage.readEntitiesFromFiles();
     assertThat(buildingsFromFiles).containsOnly(building);
   }
 
@@ -130,7 +130,7 @@ public class BuildingStorageTest extends BaseStorageTest {
   void testUpdate() {
     // given
     final var origin = buildBuilding(1);
-    buildingStorage.writeBuildings(List.of(origin), LocalDate.now());
+    buildingStorage.writeEntities(List.of(origin), LocalDate.now());
     buildingStorage.loadFromFiles();
 
     // when
@@ -151,7 +151,7 @@ public class BuildingStorageTest extends BaseStorageTest {
   void testUpdateReadFromFile() {
     // given
     final var origin = buildBuilding(1);
-    buildingStorage.writeBuildings(List.of(origin), LocalDate.now());
+    buildingStorage.writeEntities(List.of(origin), LocalDate.now());
     buildingStorage.loadFromFiles();
 
     // when
@@ -161,7 +161,7 @@ public class BuildingStorageTest extends BaseStorageTest {
     buildingStorage.writeToFile();
 
     // then
-    final var buildingsFromFiles = buildingStorage.readBuildingsFromFiles();
+    final var buildingsFromFiles = buildingStorage.readEntitiesFromFiles();
     assertThat(buildingsFromFiles).containsOnly(updated);
   }
 
@@ -169,7 +169,7 @@ public class BuildingStorageTest extends BaseStorageTest {
   void testDelete() {
     // given
     final var origin = buildBuilding(1);
-    buildingStorage.writeBuildings(List.of(origin), LocalDate.now());
+    buildingStorage.writeEntities(List.of(origin), LocalDate.now());
     buildingStorage.loadFromFiles();
 
     // when
@@ -184,7 +184,7 @@ public class BuildingStorageTest extends BaseStorageTest {
   void testDeletedReadFromFile() {
     // given
     final var origin = buildBuilding(1);
-    buildingStorage.writeBuildings(List.of(origin), LocalDate.now());
+    buildingStorage.writeEntities(List.of(origin), LocalDate.now());
     buildingStorage.loadFromFiles();
 
     // when
@@ -192,7 +192,7 @@ public class BuildingStorageTest extends BaseStorageTest {
     buildingStorage.writeToFile();
 
     // then
-    final var buildingsFromFiles = buildingStorage.readBuildingsFromFiles();
+    final var buildingsFromFiles = buildingStorage.readEntitiesFromFiles();
     assertThat(buildingsFromFiles).isEmpty();
   }
 

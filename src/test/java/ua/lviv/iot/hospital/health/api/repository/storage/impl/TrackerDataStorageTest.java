@@ -23,11 +23,11 @@ public class TrackerDataStorageTest extends BaseStorageTest {
   void testWriteToFileAndLoadFromFile() {
     // given
     final var expectedTrackerData = List.of(buildTrackerData(1), buildTrackerData(2), buildTrackerData(3));
-    trackerDataStorage.writeDataToFile(expectedTrackerData, LocalDate.now());
-    trackerDataStorage.loadDataFromFiles();
+    trackerDataStorage.writeEntitiesToFile(expectedTrackerData, LocalDate.now());
+    trackerDataStorage.loadFromFiles();
 
     // when
-    final var actualTrackerData = trackerDataStorage.getDataAll();
+    final var actualTrackerData = trackerDataStorage.getAll();
 
     // then
     assertThat(actualTrackerData).containsExactlyInAnyOrderElementsOf(expectedTrackerData);
@@ -39,26 +39,26 @@ public class TrackerDataStorageTest extends BaseStorageTest {
     final var day1 = LocalDate.now().withDayOfMonth(1);
     final var trackerDataDay1 = List.of(buildTrackerData(1, 1),
         buildTrackerData(2, 1), buildTrackerData(3, 2));
-    trackerDataStorage.writeDataToFile(trackerDataDay1, day1);
+    trackerDataStorage.writeEntitiesToFile(trackerDataDay1, day1);
 
     final var day2 = LocalDate.now().withDayOfMonth(2);
     final var trackerDataDay2 = List.of(buildTrackerData(4, 2),
         buildTrackerData(5, 2), buildTrackerData(6, 3));
-    trackerDataStorage.writeDataToFile(trackerDataDay2, day2);
+    trackerDataStorage.writeEntitiesToFile(trackerDataDay2, day2);
 
     final var day3 = LocalDate.now().withDayOfMonth(3);
     final var trackerDataDay3 = List.of(buildTrackerData(7, 4),
         buildTrackerData(8, 5), buildTrackerData(9, 6));
-    trackerDataStorage.writeDataToFile(trackerDataDay3, day3);
+    trackerDataStorage.writeEntitiesToFile(trackerDataDay3, day3);
 
     final var expectedTrackerData = Stream.of(trackerDataDay1, trackerDataDay2, trackerDataDay3)
         .flatMap(Collection::stream)
         .toList();
 
-    trackerDataStorage.loadDataFromFiles();
+    trackerDataStorage.loadFromFiles();
 
     // when
-    final var actualTrackerData = trackerDataStorage.getDataAll();
+    final var actualTrackerData = trackerDataStorage.getAll();
 
     // then
     assertThat(actualTrackerData).containsExactlyInAnyOrderElementsOf(expectedTrackerData);
@@ -70,10 +70,10 @@ public class TrackerDataStorageTest extends BaseStorageTest {
     final var trackerData = buildTrackerData(1, 1);
 
     // when
-    trackerDataStorage.saveData(1, List.of(trackerData));
+    trackerDataStorage.save(1, List.of(trackerData));
 
     // then
-    final var actualTrackerData = trackerDataStorage.getDataByTrackerId(1);
+    final var actualTrackerData = trackerDataStorage.getByTrackerId(1);
     assertThat(actualTrackerData).isNotEmpty();
 
     assertThat(actualTrackerData).containsOnly(trackerData);
@@ -88,12 +88,12 @@ public class TrackerDataStorageTest extends BaseStorageTest {
     final var expectedTrackerData = List.of(trackerData1, trackerData2);
 
     // when
-    trackerDataStorage.saveData(trackerData1.getPatientId(), List.of(trackerData1));
-    trackerDataStorage.saveData(trackerData2.getPatientId(), List.of(trackerData2));
-    trackerDataStorage.saveData(trackerData3.getPatientId(), List.of(trackerData3));
+    trackerDataStorage.save(trackerData1.getPatientId(), List.of(trackerData1));
+    trackerDataStorage.save(trackerData2.getPatientId(), List.of(trackerData2));
+    trackerDataStorage.save(trackerData3.getPatientId(), List.of(trackerData3));
 
     // then
-    final var actualTrackerData = trackerDataStorage.getDataByPatientId(1);
+    final var actualTrackerData = trackerDataStorage.getByPatientId(1);
     assertThat(actualTrackerData).isNotEmpty();
 
     assertThat(actualTrackerData).containsExactlyInAnyOrderElementsOf(expectedTrackerData);
@@ -105,10 +105,10 @@ public class TrackerDataStorageTest extends BaseStorageTest {
     final var trackerData = buildTrackerData(1, 3);
 
     // when
-    trackerDataStorage.saveData(3, List.of(trackerData));
+    trackerDataStorage.save(3, List.of(trackerData));
 
     // then
-    final var trackerDataFromFiles = trackerDataStorage.readDataFromFiles();
+    final var trackerDataFromFiles = trackerDataStorage.readEntitiesFromFiles();
     assertThat(trackerDataFromFiles).containsOnly(trackerData);
   }
 

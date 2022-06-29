@@ -21,7 +21,7 @@ public class PatientStorageTest extends BaseStorageTest {
   void testWriteToFileAndLoadFromFile() {
     // given
     final var expectedPatients = List.of(buildPatient(1), buildPatient(2), buildPatient(3));
-    patientStorage.writePatients(expectedPatients, LocalDate.now());
+    patientStorage.writeEntities(expectedPatients, LocalDate.now());
     patientStorage.loadFromFiles();
 
     // when
@@ -37,17 +37,17 @@ public class PatientStorageTest extends BaseStorageTest {
     final var day1 = LocalDate.now().withDayOfMonth(1);
     final var patientsDay1 = List.of(buildPatient(1, day1),
         buildPatient(2, day1), buildPatient(3, day1));
-    patientStorage.writePatients(patientsDay1, day1);
+    patientStorage.writeEntities(patientsDay1, day1);
 
     final var day2 = LocalDate.now().withDayOfMonth(2);
     final var patientsDay2 = List.of(buildPatient(4, day2),
         buildPatient(5, day2), buildPatient(6, day2));
-    patientStorage.writePatients(patientsDay2, day2);
+    patientStorage.writeEntities(patientsDay2, day2);
 
     final var day3 = LocalDate.now().withDayOfMonth(3);
     final var patientsDay3 = List.of(buildPatient(7, day3),
         buildPatient(8, day3), buildPatient(9, day3));
-    patientStorage.writePatients(patientsDay3, day3);
+    patientStorage.writeEntities(patientsDay3, day3);
 
     final var expectedPatients = Stream.of(patientsDay1, patientsDay2, patientsDay3)
         .flatMap(Collection::stream)
@@ -68,19 +68,19 @@ public class PatientStorageTest extends BaseStorageTest {
     final var day1 = LocalDate.now().withDayOfMonth(1);
     final var patientsDay1 = List.of(buildPatient(1, day1),
         buildPatient(2, day1), buildPatient(3, day1));
-    patientStorage.writePatients(patientsDay1, day1);
+    patientStorage.writeEntities(patientsDay1, day1);
 
     // update patient with id 2
     final var day2 = LocalDate.now().withDayOfMonth(2);
     final var patientsDay2 = List.of(buildPatient(4, day2),
         buildPatient(2, day2), buildPatient(5, day2));
-    patientStorage.writePatients(patientsDay2, day2);
+    patientStorage.writeEntities(patientsDay2, day2);
 
     // update patients with id 3 & 4
     final var day3 = LocalDate.now().withDayOfMonth(3);
     final var patientsDay3 = List.of(buildPatient(6, day3),
         buildPatient(3, day3), buildPatient(4, day3));
-    patientStorage.writePatients(patientsDay3, day3);
+    patientStorage.writeEntities(patientsDay3, day3);
 
     // should load only the latest updated patients
     final var expectedPatients = List.of(patientsDay1.get(0),
@@ -122,7 +122,7 @@ public class PatientStorageTest extends BaseStorageTest {
     patientStorage.writeToFile();
 
     // then
-    final var patientsFromFiles = patientStorage.readPatientsFromFiles();
+    final var patientsFromFiles = patientStorage.readEntitiesFromFiles();
     assertThat(patientsFromFiles).containsOnly(patient);
   }
 
@@ -130,7 +130,7 @@ public class PatientStorageTest extends BaseStorageTest {
   void testUpdate() {
     // given
     final var origin = buildPatient(1);
-    patientStorage.writePatients(List.of(origin), LocalDate.now());
+    patientStorage.writeEntities(List.of(origin), LocalDate.now());
     patientStorage.loadFromFiles();
 
     // when
@@ -151,7 +151,7 @@ public class PatientStorageTest extends BaseStorageTest {
   void testUpdateReadFromFile() {
     // given
     final var origin = buildPatient(1);
-    patientStorage.writePatients(List.of(origin), LocalDate.now());
+    patientStorage.writeEntities(List.of(origin), LocalDate.now());
     patientStorage.loadFromFiles();
 
     // when
@@ -161,7 +161,7 @@ public class PatientStorageTest extends BaseStorageTest {
     patientStorage.writeToFile();
 
     // then
-    final var patientsFromFiles = patientStorage.readPatientsFromFiles();
+    final var patientsFromFiles = patientStorage.readEntitiesFromFiles();
     assertThat(patientsFromFiles).containsOnly(updated);
   }
 
@@ -169,7 +169,7 @@ public class PatientStorageTest extends BaseStorageTest {
   void testDelete() {
     // given
     final var origin = buildPatient(1);
-    patientStorage.writePatients(List.of(origin), LocalDate.now());
+    patientStorage.writeEntities(List.of(origin), LocalDate.now());
     patientStorage.loadFromFiles();
 
     // when
@@ -184,7 +184,7 @@ public class PatientStorageTest extends BaseStorageTest {
   void testDeletedReadFromFile() {
     // given
     final var origin = buildPatient(1);
-    patientStorage.writePatients(List.of(origin), LocalDate.now());
+    patientStorage.writeEntities(List.of(origin), LocalDate.now());
     patientStorage.loadFromFiles();
 
     // when
@@ -192,7 +192,7 @@ public class PatientStorageTest extends BaseStorageTest {
     patientStorage.writeToFile();
 
     // then
-    final var patientsFromFiles = patientStorage.readPatientsFromFiles();
+    final var patientsFromFiles = patientStorage.readEntitiesFromFiles();
     assertThat(patientsFromFiles).isEmpty();
   }
 

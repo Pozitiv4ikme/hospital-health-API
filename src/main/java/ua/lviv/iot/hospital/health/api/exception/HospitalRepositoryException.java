@@ -1,4 +1,4 @@
-package ua.lviv.iot.hospital.health.api.exception.hospital;
+package ua.lviv.iot.hospital.health.api.exception;
 
 public class HospitalRepositoryException extends RuntimeException {
 

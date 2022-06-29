@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = false)
-public class Patient extends Dated {
+public class Patient extends Dated implements EntityId {
 
   public static final String HEADERS = "updatedDate,id,name,surname,roomId,phoneNumber";
 

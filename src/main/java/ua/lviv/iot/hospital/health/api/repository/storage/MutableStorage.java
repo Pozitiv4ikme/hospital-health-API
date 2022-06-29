@@ -1,9 +1,10 @@
 package ua.lviv.iot.hospital.health.api.repository.storage;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface MutableStorage<T> {
+public interface MutableStorage<T> extends ImmutableStorage<T> {
 
   void create(T entity);
 
@@ -11,8 +12,9 @@ public interface MutableStorage<T> {
 
   void deleteById(long id);
 
-  List<T> getAll();
-
   Optional<T> getById(long id);
 
+  void writeToFile();
+
+  void writeEntities(final List<T> entities, final LocalDate updateDate);
 }

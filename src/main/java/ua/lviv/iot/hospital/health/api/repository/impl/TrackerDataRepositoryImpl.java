@@ -15,21 +15,21 @@ public final class TrackerDataRepositoryImpl implements TrackerDataRepository {
 
   @Override
   public List<TrackerData> getData() {
-    return trackerDataStorage.getDataAll();
+    return trackerDataStorage.getAll();
   }
 
   @Override
   public List<TrackerData> getDataByPatientId(final long patientId) {
-    return trackerDataStorage.getDataByPatientId(patientId);
+    return trackerDataStorage.getByPatientId(patientId);
   }
 
   @Override
   public List<TrackerData> getDataById(final long id) {
-    return trackerDataStorage.getDataByTrackerId(id);
+    return trackerDataStorage.getByTrackerId(id);
   }
 
   @Override
   public void saveDataForPatientId(final long patientId, final List<TrackerData> trackerDataList) {
-    trackerDataStorage.saveData(patientId, trackerDataList);
+    trackerDataStorage.save(patientId, trackerDataList);
   }
 }
