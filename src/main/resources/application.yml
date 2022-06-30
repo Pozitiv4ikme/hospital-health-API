@@ -1,0 +1,26 @@
+server:
+  port: 8888
+  servlet:
+    context-path: /v1/api
+
+storage:
+  folder: hospital
+  file-end: .csv
+  hospital:
+    file-start: hospitals_
+    file-pattern: ${storage.hospital.file-start}%s${storage.file-end}
+  building:
+    file-start: buildings_
+    file-pattern: ${storage.building.file-start}%s${storage.file-end}
+  room:
+    file-start: rooms_
+    file-pattern: ${storage.room.file-start}%s${storage.file-end}
+  patient:
+    file-start: patients_
+    file-pattern: ${storage.patient.file-start}%s${storage.file-end}
+  tracker:
+    file-start: trackers_
+    file-pattern: ${storage.tracker.file-start}%s${storage.file-end}
+    data:
+      file-start: trackersData_
+      file-pattern: ${storage.tracker.data.file-start}%s${storage.file-end}
