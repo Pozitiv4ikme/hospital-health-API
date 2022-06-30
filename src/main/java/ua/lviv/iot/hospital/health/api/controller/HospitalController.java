@@ -4,6 +4,7 @@ package ua.lviv.iot.hospital.health.api.controller;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,8 +54,10 @@ public final class HospitalController {
   }
 
   @GetMapping("{id}")
-  public Optional<HospitalDto> getById(@PathVariable("id") final long id) {
-    return hospitalService.getById(id);
+  public ResponseEntity<HospitalDto> getById(@PathVariable("id") final long id) {
+    return hospitalService.getById(id)
+        .map(hospitalDto -> ResponseEntity.ok().body(hospitalDto))
+        .orElse(ResponseEntity.notFound().build());
   }
 
   @GetMapping("{id}/buildings")

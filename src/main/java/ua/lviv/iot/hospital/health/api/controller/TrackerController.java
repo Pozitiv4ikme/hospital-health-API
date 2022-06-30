@@ -1,8 +1,8 @@
 package ua.lviv.iot.hospital.health.api.controller;
 
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,8 +39,10 @@ public final class TrackerController {
   }
 
   @GetMapping("{id}")
-  public Optional<TrackerDto> getById(@PathVariable("id") final long id) {
-    return trackerService.getById(id);
+  public ResponseEntity<TrackerDto> getById(@PathVariable("id") final long id) {
+    return trackerService.getById(id)
+        .map(trackerDto -> ResponseEntity.ok().body(trackerDto))
+        .orElse(ResponseEntity.notFound().build());
   }
 
   @GetMapping
